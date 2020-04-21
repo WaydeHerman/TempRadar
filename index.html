@@ -1880,93 +1880,104 @@
                             });
                           }
 
-                    var tmpSegmentsLabelBand = tmp_chartSVG
-                    .selectAll("path.segment-band")
-                    .data([chartPieData[i]])
-                    .enter()
-                    .append("path")
-                    .classed("segment-band", true)
-                    .attr("d", segmentLabelBandArc)
-                    .attr("fill", "#82ADBD")
-  
-                  var tmpLabels = tmp_chartSVG
-                    .append("g")
-                    .classed("labels", true);
+                                var tmpSegmentsLabelBand = tmp_chartSVG
+              .selectAll("path.segment-band")
+              .data([chartPieData[i]])
+              .enter()
+              .append("path")
+              .classed("segment-band", true)
+              .attr("d", segmentLabelBandArc)
+              .attr("id", function(d) {
+                return (
+                  d.data.value.key.toLowerCase().replace(/ /g, "-") + "-band-temp"
+                );
+              })
+              .attr("fill", "#82ADBD")
+              .each(function(d, i) {
+                var firstArcSection = /(^.+?)L/;
+                var newArc = firstArcSection.exec(d3.select(this).attr("d"))[1];
+                d.newArc = newArc.replace(/,/g, " ");
+                d.percentage =
+                  ((d.endAngle - d.startAngle) / 2 + d.startAngle) / 0.0628319;
+                if (d.percentage >= 100) {
+                  d.percentage -= 100;
+                }
+                if (d.percentage >= 25 && d.percentage <= 75) {
+                  var startLoc = /M(.*?)A/;
+                  var middleLoc = /A(.*?)0 0 1/;
+                  var endLoc = /0 0 1 (.*?)$/;
+                  d.newStart = endLoc.exec(d.newArc)[1];
+                  d.newEnd = startLoc.exec(d.newArc)[1];
+                  d.middleSec = middleLoc.exec(d.newArc)[1];
+                  d.newArc =
+                    "M" + d.newStart + "A" + d.middleSec + "0 0 0 " + d.newEnd;
+                }
+                d.hiddenArc = chartSVG
+                  .append("path")
+                  .attr("class", "hiddenDonutArcs")
+                  .attr("id", function() {
+                    return (
+                      "hidden-tmp-opp-space-band-" + d.data.value.key.replace(/ /g,"-")
+                    );
+                  })
+                  .attr("d", d.newArc)
+                  .style("fill", "none");
+              })
 
-                  var tmpLabelsOther = tmp_chartSVG
-                    .append("g")
-                    .classed("labels", true);
-  
-                  tmpLabels
-                    .append("def")
-                    .append("path")
-                    .attr("id", "label-path")
-                    .attr(
-                      "d",
-                      "m0 " +
-                        -labelRadius +
-                        " a" +
-                        labelRadius +
-                        " " +
-                        labelRadius +
-                        " 0 1,1 -0.01 0"
-                    );
-  
-                  tmpLabelsOther
-                    .append("def")
-                    .append("path")
-                    .attr("id", "label-other-path")
-                    .attr(
-                      "d",
-                      "m0 " +
-                        -labelOtherRadius +
-                        " a" +
-                        labelOtherRadius +
-                        " " +
-                        labelOtherRadius +
-                        " 0 1,1 -0.01 0"
-                    );
-  
-                  tmpLabels
-                    .selectAll("text")
-                    .data([chartPieData[i]])
-                    .enter()
-                    .append("text")
-                    .attr("class", "label-text")
-                    .append("textPath")
-                    .attr("xlink:href", "#label-path")
-                    .attr("startOffset", function(d, i) {
-                      var percentage =
-                        ((d.endAngle - d.startAngle) / 2 + d.startAngle) /
-                        0.0628319;
-                      return percentage + "%";
-                    })
-                    .text(function(d) {
-                      return label_wrap(d.data.value.key.toUpperCase())[0];
-                    });
-  
-                  tmpLabelsOther
-                    .selectAll("text")
-                    .data([chartPieData[i]])
-                    .enter()
-                    .append("text")
-                    .attr("class", "label-text")
-                    .append("textPath")
-                    .attr("xlink:href", "#label-other-path")
-                    .attr("startOffset", function(d, i) {
-                      var percentage =
-                        ((d.endAngle - d.startAngle) / 2 + d.startAngle) /
-                        0.0628319;
-                      return percentage + "%";
-                    })
-                    .text(function(d) {
-                      var result = label_wrap(d.data.value.key.toUpperCase());
-                      if (result.length > 2) {
-                        return result[1] + " " + result[2];
+              var tmpOppSpaceLabels = tmp_chartSVG
+                .selectAll(".opp-space-label-text")
+                .data(chartPieData)
+                .enter()
+                .append("g")
+                .selectAll(".test-class")
+                .data(function(d) {
+                  var limit = labelFontData.limit;
+
+                  return textWrap(
+                    d.data.value.key.toUpperCase().replace(/_/g," "),
+                    d.percentage,
+                    limit
+                  );
+                })
+                .enter()
+                .append("text")
+                .attr("class", "label opp-space-label-text")
+                .attr("dy", function(d, i) {
+                  if (d.percentage >= 25 && d.percentage <= 75) {
+                    if (d.lineLength === 1) {
+                      return "-1.1em";
+                    } else {
+                      if (i === 0) {
+                        return "-2.6em";
                       } else {
-                        return result[1];
+                        return "-1.3em";
                       }
-                    });
+                    }
+                  } else {
+                    if (d.lineLength === 1) {
+                      return "1.8em";
+                    } else {
+                      if (i === 0) {
+                        return "2.1em";
+                      } else {
+                        return "3.3em";
+                      }
+                    }
+                  }
+                })
+                .append("textPath")
+                .attr("xlink:href", function(d, i) {
+                  return (
+                    "#" +
+                    "hidden-tmp-opp-space-band-" +
+                    d.text_data.toLowerCase().replace(/ /g,"-")
+                  );
+                })
+                .attr("startOffset", "50%")
+                .text(function(d) {
+                  return d.data
+                });
+
 
                           var tmp_nodes = tmp_chartSVG
                           .selectAll("nodes")
@@ -1976,7 +1987,7 @@
                           .attr("class", "nodes")
                           .attr("r", function(d) {
                             if (d["Funding Stage"] !== "Acquired") {
-                              return 2;
+                              return 3;
                             }
                           })
                           .attr("opacity", function(d) {
@@ -2030,14 +2041,14 @@
                           })
                           .attr("width", function(d) {
                             if (d["Funding Stage"] === "Acquired") {
-                              return 5.5;
+                              return 7.7;
                             } else {
                               return 0;
                             }
                           })
                           .attr("height", function(d) {
                             if (d["Funding Stage"] === "Acquired") {
-                              return 5.5;
+                              return 7.7;
                             } else {
                               return 0;
                             }
@@ -3743,7 +3754,7 @@
   
             var CompetitorMode = 0;
 
-            var radiusSize = 2;
+            var radiusSize = 3;
 
             var nodes = chartSVG
               .selectAll("nodes")
@@ -3760,11 +3771,10 @@
               })
               .attr("class", "nodes")
               .attr("r", function(d) {
-                
                 if (
                     d["Funding Stage"] !== "Acquired"
                 ) {
-                  return 2;
+                  return 3;
                 }
               })
               .attr("cx", function(d) {
@@ -3829,14 +3839,14 @@
               })
               .attr("width", function(d) {
                 if (d["Funding Stage"] === "Acquired") {
-                  return 5.5;
+                  return 7.7;
                 } else {
                   return 0;
                 }
               })
               .attr("height", function(d) {
                 if (d["Funding Stage"] === "Acquired") {
-                  return 5.5;
+                  return 7.7;
                 } else {
                   return 0;
                 }
@@ -4285,7 +4295,7 @@
                     d["Funding Stage"] !== "Acquired" &&
                     d.hide === false
                   ) {
-                    var endR = 2;
+                    var endR = 3;
                   } else {
                     var endR = 0;
                   }
@@ -4340,7 +4350,7 @@
                     d["Funding Stage"] === "Acquired" &&
                     d.hide === false
                   ) {
-                    var endWidth = 5.5;
+                    var endWidth = 7.7;
                   } else {
                     var endWidth = 0;
                   }
@@ -4356,7 +4366,7 @@
                     d["Funding Stage"] === "Acquired" &&
                     d.hide === false
                   ) {
-                    var endHeight = 5.5;
+                    var endHeight = 7.7;
                   } else {
                     var endHeight = 0;
                   }
@@ -4374,7 +4384,7 @@
                   ) {
                     var endY = 0;
                   } else {
-                    var endY = 7;
+                    var endY = 10;
                   }
                   var i = d3.interpolate(startY, endY);
                   return function(t) {
@@ -5515,44 +5525,44 @@
                     .attr("height", tmp_height);
   
                           if (i === 0) {
-                            var hor = tmp_width - 90
+                            var hor = tmp_width - 190
                             var ver = tmp_height + 45;
                           }
                           if (i === 1) {
-                            var hor = tmp_width - 180;
-                            var ver = tmp_height + 40;
-                          }
-                          if (i === 2) {
-                            var hor = tmp_width - 235;
-                            var ver = tmp_height + 30;
-                          }
-                          if (i === 3) {
-                            var hor = tmp_width - 285;
-                            var ver = tmp_height + 20;
-                          }
-                          if (i === 4) {
                             var hor = tmp_width - 320;
                             var ver = tmp_height - 0;
                           }
+                          if (i === 2) {
+                            var hor = tmp_width - 340;
+                            var ver = tmp_height - 100;
+                          }
+                          if (i === 3) {
+                            var hor = tmp_width - 315;
+                            var ver = tmp_height - 270;
+                          }
+                          if (i === 4) {
+                            var hor = tmp_width - 210;
+                            var ver = tmp_height - 330;
+                          }
                           if (i === 5) {
-                            var hor = tmp_width - 330;
-                            var ver = tmp_height - 20;
+                            var hor = tmp_width - 10;
+                            var ver = tmp_height - 340;
                           }
                           if (i === 6) {
-                            var hor = tmp_width - 335;
-                            var ver = tmp_height - 70;
+                            var hor = tmp_width + 30;
+                            var ver = tmp_height - 280;
                           }
                           if (i === 7) {
-                            var hor = tmp_width - 325;
-                            var ver = tmp_height - 150;
+                            var hor = tmp_width + 40;
+                            var ver = tmp_height - 110;
                           }
                           if (i === 8) {
-                            var hor = tmp_width - 300;
-                            var ver = tmp_height - 230;
+                            var hor = tmp_width + 30;
+                            var ver = tmp_height + 10;
                           }
                           if (i === 9) {
-                            var hor = tmp_width - 265;
-                            var ver = tmp_height - 275;
+                            var hor = tmp_width - 5;
+                            var ver = tmp_height + 35;
                           }
 
   
@@ -5742,7 +5752,7 @@
                     .attr("class", "nodes")
                     .attr("r", function(d) {
                       if (d["Funding Stage"] !== "Acquired") {
-                        return 2;
+                        return 3;
                       }
                     })
                     .attr("opacity", function(d) {
@@ -5791,14 +5801,14 @@
                     })
                     .attr("width", function(d) {
                       if (d["Funding Stage"] === "Acquired") {
-                        return 5.5;
+                        return 7.7;
                       } else {
                         return 0;
                       }
                     })
                     .attr("height", function(d) {
                       if (d["Funding Stage"] === "Acquired") {
-                        return 5.5;
+                        return 7.7;
                       } else {
                         return 0;
                       }
