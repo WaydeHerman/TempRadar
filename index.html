@@ -93,7 +93,7 @@
         fill: white;
         text-anchor: middle;
         font-weight: bold;
-        font-size: 6px;
+        font-size: 10px;
         font-family: "Graphik Bold";
       }
 
@@ -1747,104 +1747,44 @@
                           .attr("height", tmp_height);
 
                           if (i === 0) {
-                            var hor = tmp_width - 90
+                            var hor = tmp_width - 190
                             var ver = tmp_height + 45;
                           }
                           if (i === 1) {
-                            var hor = tmp_width - 180;
-                            var ver = tmp_height + 40;
-                          }
-                          if (i === 2) {
-                            var hor = tmp_width - 220;
-                            var ver = tmp_height + 20;
-                          }
-                          if (i === 3) {
-                            var hor = tmp_width - 285;
-                            var ver = tmp_height + 20;
-                          }
-                          if (i === 4) {
-                            var hor = tmp_width - 330;
+                            var hor = tmp_width - 320;
                             var ver = tmp_height - 0;
                           }
+                          if (i === 2) {
+                            var hor = tmp_width - 340;
+                            var ver = tmp_height - 100;
+                          }
+                          if (i === 3) {
+                            var hor = tmp_width - 315;
+                            var ver = tmp_height - 270;
+                          }
+                          if (i === 4) {
+                            var hor = tmp_width - 210;
+                            var ver = tmp_height - 330;
+                          }
                           if (i === 5) {
-                            var hor = tmp_width - 330;
-                            var ver = tmp_height - 20;
+                            var hor = tmp_width - 10;
+                            var ver = tmp_height - 340;
                           }
                           if (i === 6) {
-                            var hor = tmp_width - 355;
-                            var ver = tmp_height - 70;
-                          }
-                          if (i === 7) {
-                            var hor = tmp_width - 320;
-                            var ver = tmp_height - 150;
-                          }
-                          if (i === 8) {
-                            var hor = tmp_width - 300;
-                            var ver = tmp_height - 210;
-                          }
-                          if (i === 9) {
-                            var hor = tmp_width - 265;
-                            var ver = tmp_height - 275;
-                          }
-                          if (i === 10) {
-                            var hor = tmp_width - 205;
-                            var ver = tmp_height - 305;
-                          }
-                          if (i === 11) {
-                            var hor = tmp_width - 135;
-                            var ver = tmp_height - 345;
-                          }
-                          if (i === 12) {
-                            var hor = tmp_width - 75;
-                            var ver = tmp_height - 345;
-                          }
-                          if (i === 13) {
-                            var hor = tmp_width - 0;
-                            var ver = tmp_height - 345;
-                          }
-                          if (i === 14) {
-                            var hor = tmp_width - 0;
-                            var ver = tmp_height - 320;
-                          }
-                          if (i === 15) {
                             var hor = tmp_width + 30;
                             var ver = tmp_height - 280;
                           }
-                          if (i === 16) {
+                          if (i === 7) {
+                            var hor = tmp_width + 40;
+                            var ver = tmp_height - 110;
+                          }
+                          if (i === 8) {
                             var hor = tmp_width + 30;
-                            var ver = tmp_height - 220;
+                            var ver = tmp_height + 10;
                           }
-                          if (i === 17) {
-                            var hor = tmp_width + 35;
-                            var ver = tmp_height - 140;
-                          }
-                          if (i === 18) {
-                            var hor = tmp_width + 45;
-                            var ver = tmp_height - 60;
-                          }
-                          if (i === 19) {
-                            var hor = tmp_width + 45;
-                            var ver = tmp_height - 10;
-                          }
-                          if (i === 20) {
-                            var hor = tmp_width + 45;
-                            var ver = tmp_height - 10;
-                          }
-                          if (i === 21) {
-                            var hor = tmp_width + 25;
-                            var ver = tmp_height + 30;
-                          }
-                          if (i === 22) {
-                            var hor = tmp_width + 25;
-                            var ver = tmp_height + 30;
-                          }
-                          if (i === 23) {
+                          if (i === 9) {
                             var hor = tmp_width - 5;
-                            var ver = tmp_height + 30;
-                          }
-                          if (i === 24) {
-                            var hor = tmp_width - 5;
-                            var ver = tmp_height + 45;
+                            var ver = tmp_height + 35;
                           }
 
                           var tmp_chartSVG = tmp_svg
@@ -2975,7 +2915,7 @@
                   .attr("class", "hiddenDonutArcs")
                   .attr("id", function() {
                     return (
-                      "hidden-opp-space-band-" + d.data.value.key.replace(/_/g," ")
+                      "hidden-opp-space-band-" + d.data.value.key.replace(/ /g,"-")
                     );
                   })
                   .attr("d", d.newArc)
@@ -3028,7 +2968,7 @@
                 .attr("dy", function(d, i) {
                   if (d.percentage >= 25 && d.percentage <= 75) {
                     if (d.lineLength === 1) {
-                      return "-1.9em";
+                      return "-1.1em";
                     } else {
                       if (i === 0) {
                         return "-2.6em";
@@ -3038,7 +2978,7 @@
                     }
                   } else {
                     if (d.lineLength === 1) {
-                      return "2.7em";
+                      return "1.8em";
                     } else {
                       if (i === 0) {
                         return "2.1em";
@@ -3053,7 +2993,7 @@
                   return (
                     "#" +
                     "hidden-opp-space-band-" +
-                    d.text_data.toLowerCase()
+                    d.text_data.toLowerCase().replace(/ /g,"-")
                   );
                 })
                 .attr("startOffset", "50%")
@@ -3528,6 +3468,8 @@
               var id = "#" + d.name.toLowerCase() + "-label-path-text";
               //d3.select(id).remove();
             });
+
+            console.log('chartPieData', chartPieData)
   
             count_by_year.forEach(function(d) {
               chartPieData.forEach(function(v) {
@@ -5612,66 +5554,7 @@
                             var hor = tmp_width - 265;
                             var ver = tmp_height - 275;
                           }
-                          if (i === 10) {
-                            var hor = tmp_width - 205;
-                            var ver = tmp_height - 310;
-                          }
-                          if (i === 11) {
-                            var hor = tmp_width - 135;
-                            var ver = tmp_height - 335;
-                          }
-                          if (i === 12) {
-                            var hor = tmp_width - 75;
-                            var ver = tmp_height - 350;
-                          }
-                          if (i === 13) {
-                            var hor = tmp_width - 0;
-                            var ver = tmp_height - 330;
-                          }
-                          if (i === 14) {
-                            var hor = tmp_width - 0;
-                            var ver = tmp_height - 310;
-                          }
-                          if (i === 15) {
-                            var hor = tmp_width + 15;
-                            var ver = tmp_height - 280;
-                          }
-                          if (i === 16) {
-                            var hor = tmp_width + 30;
-                            var ver = tmp_height - 220;
-                          }
-                          if (i === 17) {
-                            var hor = tmp_width + 35;
-                            var ver = tmp_height - 140;
-                          }
-                          if (i === 18) {
-                            var hor = tmp_width + 45;
-                            var ver = tmp_height - 90;
-                          }
-                          if (i === 19) {
-                            var hor = tmp_width + 35;
-                            var ver = tmp_height - 10;
-                          }
-                          if (i === 20) {
-                            var hor = tmp_width + 30;
-                            var ver = tmp_height - 10;
-                          }
-                          if (i === 21) {
-                            var hor = tmp_width + 25;
-                            var ver = tmp_height + 10;
-                          }
-                          if (i === 22) {
-                            var hor = tmp_width + 5;
-                            var ver = tmp_height + 30;
-                          }
-                          if (i === 23) {
-                            var hor = tmp_width - 5;
-                            var ver = tmp_height + 40;
-                          }
-                          if (i === 24) {
-                            var hor = tmp_width - 5;
-                            var ver = tmp_height + 45;
-                          }
+
   
                   var tmp_chartSVG = tmp_svg
                     .append("g")
