@@ -1390,13 +1390,6 @@
     
             <div>
 
-
-          <div class="dropdown-industry">
-            <button class="dropbtn">
-                <i class="arrow down"></i> Select Industry
-              </button>
-              <div class="dropdown-content" id="industry-selector"></div>
-          </div>
           <div id="save-button-container">
             <button class="switch-button" id="save-button">Save Image</button>
           </div>
@@ -1514,7 +1507,7 @@
         var chartTitle = chartSVG
           .append("text")
           .attr("class", "chart-title")
-          .text("Radar Title")
+          .text("Disrupting the Energy Industry: Startup Landscape")
           .attr("y", (-height * 4.55) / 10)
           .style("display", "none")
   
@@ -1552,13 +1545,13 @@
           .attr("x", -titleLogoWidth / 2); 
   
         d3.csv(
-          "Schneider Electric Radar - Startups (Radar).csv"
+          "https://docs.google.com/spreadsheets/d/e/2PACX-1vRNHDkhn1v2Q3xs_t77v1cGFG-ZUDfTSrOM2tJZI3bIbeYwjjJMgSkuvou5qtw_dWN_7oN2o9gr0EdB/pub?gid=1685108473&single=true&output=csv"
         ).then(function(data) {
           d3.csv(
-            "Schneider Electric Radar - Definitions (Radar).csv"
+            "https://docs.google.com/spreadsheets/d/e/2PACX-1vRNHDkhn1v2Q3xs_t77v1cGFG-ZUDfTSrOM2tJZI3bIbeYwjjJMgSkuvou5qtw_dWN_7oN2o9gr0EdB/pub?gid=1089447501&single=true&output=csv"
           ).then(function(desc) {
 
-            d3.csv("Schneider Electric Radar - Hero Startups (Radar).csv"
+            d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRNHDkhn1v2Q3xs_t77v1cGFG-ZUDfTSrOM2tJZI3bIbeYwjjJMgSkuvou5qtw_dWN_7oN2o9gr0EdB/pub?gid=835578165&single=true&output=csv"
             ).then(function(hero_data) { 
 
               console.log('data', data)
@@ -2687,30 +2680,7 @@
                   "#868686",
                   "#7A7A7A"
                 ]); */
-  
-            industryList = [
-              "All Startups"
-            ];
 
-            count_by_industry.forEach(function(v) {
-              if (v.key != "") {
-                industryList.push(v.key)
-              }
-            })
-  
-            var industrySelector = d3
-              .select("#industry-selector")
-              .selectAll("a")
-              .data(industryList)
-              .enter()
-              .append("text")
-              .html(function(d) {
-                return "<a href='#'>" + d + "</a>";
-              })
-              .on("click", function(d) {
-                update_opacity(d);
-                industryFilter = d;
-              });
 
             // Bar Chart:
             barChartList = ["Amount of Funding", "Founded Year", "Maturity"]
