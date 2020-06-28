@@ -5,6 +5,14 @@
     <title>Dashboard</title>
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.0.1/spin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.js"></script>
+    <script src="https://api.mapbox.com/mapbox.js/v3.3.0/mapbox.js"></script>
+    <script src="https://d3js.org/d3-queue.v3.min.js"></script>
+    <link
+      href="https://api.mapbox.com/mapbox.js/v3.2.1/mapbox.css"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    />
     <script src="https://cdn.rawgit.com/eligrey/canvas-toBlob.js/f1a01896135ab378aa5c0118eadd81da55e698d8/canvas-toBlob.js"></script>
     <script src="https://cdn.rawgit.com/eligrey/FileSaver.js/e9d941381475b5df8b7d7691013401e171014e89/FileSaver.min.js"></script>
         <script
@@ -49,7 +57,7 @@
       }
 
       #save-button-container {
-        margin-top: 0px;
+        margin-top: 30px;
         text-align: center;
       }
 
@@ -72,16 +80,16 @@
         stroke-width: 2px;
       }
 
-      .existing-segments {
-        fill: #dfdfdf;
+      .mature-segments {
+        fill: #f4f4f4;
       }
 
       .emerging-segments {
         fill: #e9e9e9;
       }
 
-      .distant-segments {
-        fill: #f4f4f4;
+      .nascent-segments {
+        fill: #dfdfdf;
       }
 
       .segment-band {
@@ -101,7 +109,7 @@
         fill: white;
         text-anchor: middle;
         font-weight: bold;
-        font-size: 6px;
+        font-size: 10px;
         font-family: "Graphik Bold";
       }
 
@@ -231,7 +239,7 @@
       }
 
       #switch-button:hover {
-        background-color: #132A54;
+        background-color: #247DC5;
       }
 
       #switch-button-label {
@@ -252,12 +260,12 @@
         font-size: 10px;
         border: none;
         cursor: pointer;
-        min-width: 120px;
+        min-width: 130px;
         text-anchor: middle;
       }
 
       /* The container <div> - needed to position the dropdown content */
-      .dropdown-industry {
+      .dropdown-client {
         margin: auto;
         position: relative;
         display: none;
@@ -269,7 +277,7 @@
         display: none;
         position: absolute;
         background-color: #f1f1f1;
-        min-width: 120px;
+        min-width: 130px;
         z-index: 1;
         max-height: 530px;
         overflow: auto;
@@ -295,7 +303,7 @@
       }
 
       /* Show the dropdown menu on hover */
-      .dropdown-industry:hover .dropdown-content {
+      .dropdown-client:hover .dropdown-content {
         display: block;
       }
 
@@ -304,8 +312,8 @@
       }
 
       /* Change the background color of the dropdown button when the dropdown content is shown */
-      .dropdown-industry:hover .dropbtn {
-        background-color: #132A54;
+      .dropdown-client:hover .dropbtn {
+        background-color: #247DC5;
       }
 
       .switch-button {
@@ -317,7 +325,7 @@
         border: none;
         cursor: pointer;
         text-anchor: middle;
-        width: 120px;
+        width: 130px;
         font-weight: bold;
       }
 
@@ -337,7 +345,7 @@
 
       #map-button:hover,
       #save-button:hover {
-        background-color: #132A54;
+        background-color: #247DC5;
       }
 
       .switch {
@@ -434,7 +442,7 @@
       .button {
         position: relative;
         top: 50%;
-        width: 120px;
+        width: 130px;
         height: 36px;
         margin: 0px auto 0 auto;
         overflow: hidden;
@@ -471,6 +479,7 @@
         z-index: 1;
       }
 
+        #button-17,
       #button-16 {
         display: none;
       }
@@ -496,7 +505,7 @@
       }
 
       #button-17 .knobs:before {
-        content: "Startups";
+        content: "Global";
         position: absolute;
         top: 4px;
         left: 4px;
@@ -516,8 +525,8 @@
       }
 
       #button-17 .checkbox:checked + .knobs:before {
-        content: "Competitors";
-        left: 46px;
+        content: "Africa";
+        left: 56px;
         background-color: #ea3b66;
       }
 
@@ -537,7 +546,7 @@
 
       #button-16 .checkbox:checked + .knobs:before {
         content: "Year";
-        left: 46px;
+        left: 56px;
         background-color: #ea3b66;
       }
 
@@ -558,11 +567,15 @@
         -webkit-transform: rotate(45deg);
       }
 
-            #map {
+      #map {
+      position: relative;
+      outline: none;
+      overflow: hidden;
+      height: 100%; 
       }
 
       .bg {
-        background-color: #cbcbcb;
+        background-color: #F4F4F4;
         position: absolute;
         top: 0px;
         left: 0px;
@@ -580,12 +593,14 @@
         position: fixed;
         width: 380px;
         height: 100vh;
-        background-color: #000000;
-        border-left: 2px solid #454545;
+        background-color: #F4F4F4;
+        border-left: 2px solid #DCDCDC;
         right: 0px;
         top: 0px;
+        z-index: 100;
       }
 
+      .city-circle,
       .country-circle {
         fill-opacity: 0.3;
         stroke-width: 3px;
@@ -599,7 +614,7 @@
       }
 
       #chart-button:hover {
-        background-color: #132A54;
+        background-color: #247DC5;
       }
 
       .map-tooltip {
@@ -638,10 +653,10 @@
         max-height: 300px;
         overflow: scroll;
         font-family: "Graphik Regular";
-        background-color: black;
-        color: white;
-        border: 1px solid #787878;
+        background-color: white;
+        color: #313131;
         padding: 10px;
+        border: 2px solid #313131;
       }
 
       .startup-table tr {
@@ -654,7 +669,7 @@
       }
 
       .startup-table td > a {
-        color: white;
+        color: #313131;
       }
 
       .table-header {
@@ -670,8 +685,8 @@
             height: 100vh;
             left: 0px;
             top: 0px;
-            background-color: #000000;
-            border-right: 2px solid #454545;
+            background-color: #F4F4F4;
+            border-right: 2px solid #DCDCDC;
             font-family: "Graphik Bold";  
             vertical-align: middle;
             text-align: center;
@@ -696,8 +711,7 @@
       }
 
       .left-sidebar-header img {
-        width: 40px;
-        height: 40px;
+        width: 100px;
         object-fit: contain;
       }
 
@@ -715,7 +729,7 @@
         align-items: center;
         justify-content: center;
         flex-direction: column-reverse;
-        color: #787878;
+        color: #C3C3C3;
         margin: auto;
       }
 
@@ -729,7 +743,7 @@
       }
 
       .left-sidebar-btn.active {
-        color: #DDDDDD;
+        color: #313131;
     }
 
     .popup-bg {
@@ -1077,7 +1091,7 @@
 
   /* Change the background color of the dropdown button when the dropdown content is shown */
   .dropdown-bar-chart:hover .dropbtn-b {
-    background-color: #132A54;
+    background-color: #247DC5;
   }
 
   .svg-bar-container {
@@ -1095,7 +1109,8 @@
 
   .map-container {
     grid-column: 2 / span 1;
-    grid-row: 1 / span 2;
+    grid-row: 1 / span 3;
+    position: relative;
   }
 
   .tick > line {
@@ -1336,7 +1351,7 @@
       </div>
     <div class="left-sidebar">
       <div class="left-sidebar-header">
-        <img src="assets/logo-.png">
+        <img src="assets/logo.png">
       </div>
 
       <div class="left-sidebar-buttons">
@@ -1387,9 +1402,21 @@
               <div class="knobs"></div>
               <div class="layer"></div>
             </div>
+            <div class="button b2" id="button-17">
+              <input type="checkbox" class="checkbox" />
+              <div class="knobs"></div>
+              <div class="layer"></div>
+            </div>
     
             <div>
 
+
+          <div class="dropdown-client">
+            <button class="dropbtn">
+                Select Client Served  <i class="arrow down"></i>
+              </button>
+              <div class="dropdown-content" id="client-selector"></div>
+          </div>
           <div id="save-button-container">
             <button class="switch-button" id="save-button">Save Image</button>
           </div>
@@ -1408,16 +1435,20 @@
           height = 860,
           innerRadius = 50,
           outerRadius = 300,
+          nodeRadius = 2.6,
+          nodeOtherWidth = 5.5,
           keySize = 10,
           keySpacing = 10,
-          radial = "maturity",
+          radial = "year",
           animationDuration = 2000,
           keyWidth = 160,
           keyHeight = 260,
           filter = 0,
           filterKey = "",
-          industryFilter = "All Startups",
-          logoPath = "",
+          clientFilter = "All Startups",
+          geoFilter = "All Startups",
+          filters = {type: "All Startups", geotype: "All Startups"}
+          logoPath = "assets/engie_logo.png",
           titleLogoWidth = 80,
           titleLogoHeight = 50,
           hoverOn = 0;
@@ -1429,6 +1460,12 @@
           popupMode = {"page": "none", "type": "none"},
           indexTracker = {},
           indexTrackerYear = {};
+
+      // mapbox access token
+      const accessToken =
+        "pk.eyJ1IjoiZWRkaWVsOTIiLCJhIjoiY2thb2VhZ2RsMDJsaDJ0cW4wYmppNzFwbCJ9.qo71Gruasxg7YdwOSVtmZw";
+
+      L.mapbox.accessToken = accessToken;
 
     var categoryFontObject = [
       { name: 'themeFont',
@@ -1507,78 +1544,92 @@
         var chartTitle = chartSVG
           .append("text")
           .attr("class", "chart-title")
-          .text("Disrupting the Energy Industry: Startup Landscape")
+          .text("BNP Paribas")
           .attr("y", (-height * 4.55) / 10)
           .style("display", "none")
   
-        var leftProjection = d3
-          .geoMercator()
-          .translate([leftWidth / 2, leftHeight / 2])
-          .center([30, 40.7])
-          .scale([150]);
-  
-        var leftSVG = d3
-          .select("#map")
-          .append("svg")
-          .attr("width", leftWidth)
-          .attr("height", leftHeight);
-  
-        leftSVG
-          .append("rect")
-          .attr("fill", "#CBCBCB")
-          .attr("width", leftWidth)
-          .attr("height", leftHeight);
-  
         d3.select(".map-container").style("display", "none")
         d3.select(".map-tooltip").style("display", "none")
-  
-        var leftG = leftSVG.append("g");
-  
-        var leftPath = d3.geoPath().projection(leftProjection);
-  
-        var chartLogo = chartSVG
+
+        /*var chartLogo = chartSVG
           .append("image")
           .attr("xlink:href", logoPath)
           .attr("width", titleLogoWidth)
           .attr("height", titleLogoHeight)
           .attr("y", -titleLogoHeight / 2)
-          .attr("x", -titleLogoWidth / 2); 
+          .attr("x", -titleLogoWidth / 2)
+          .style("display", "none")*/
   
         d3.csv(
-          "https://docs.google.com/spreadsheets/d/e/2PACX-1vRNHDkhn1v2Q3xs_t77v1cGFG-ZUDfTSrOM2tJZI3bIbeYwjjJMgSkuvou5qtw_dWN_7oN2o9gr0EdB/pub?gid=1685108473&single=true&output=csv"
+          "https://cors-anywhere.herokuapp.com/https://docs.google.com/spreadsheets/d/e/2PACX-1vRbG7TrPwBkpgmL5PG7RlZ5-Xl4aQ-qW3_hnLV9dBK3wAULU1WHV64VTCI6wCJNIkjU1PlCGQrhBi_1/pub?gid=0&single=true&output=csv"
         ).then(function(data) {
-          d3.csv(
-            "https://docs.google.com/spreadsheets/d/e/2PACX-1vRNHDkhn1v2Q3xs_t77v1cGFG-ZUDfTSrOM2tJZI3bIbeYwjjJMgSkuvou5qtw_dWN_7oN2o9gr0EdB/pub?gid=1089447501&single=true&output=csv"
-          ).then(function(desc) {
+          /*d3.csv(
+          "https://cors-anywhere.herokuapp.com/https://docs.google.com/spreadsheets/d/e/2PACX-1vSafGm_gSEK_M6dTEcS3sd2N7CcehHPfg561BJtgzrHClIt5DH79yqHI1LpeOLbbwGob_Xi0kVUdxMB/pub?gid=1462501778&single=true&output=csv"
+          ).then(function(desc) {*/
 
-            d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRNHDkhn1v2Q3xs_t77v1cGFG-ZUDfTSrOM2tJZI3bIbeYwjjJMgSkuvou5qtw_dWN_7oN2o9gr0EdB/pub?gid=835578165&single=true&output=csv"
-            ).then(function(hero_data) { 
+          var transform = d3.geoTransform({ point: projectPoint }),
+            path = d3.geoPath().projection(transform);
+            
+            d3.select("#map").attr("width", (window.innerWidth) + "px").attr("height", (window.innerHeight) + "px")
+              .style("width", (window.innerWidth) + "px")
 
-              console.log('data', data)
-              console.log('desc', desc)
-              console.log('hero', hero_data)
+          var map = new L.Map("map", {
+            center: [0, 100],
+            zoom: 2,
+            minZoom: 2,
+            maxZoom: 6,
+            }).whenReady(function() {
+              setTimeout(function(){ 
+                map.invalidateSize(true)}, 400);
+              //L.Map.invalidateSize()
+            }).addLayer(
+              new L.TileLayer(
+                "https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=" +
+                  accessToken,
+                {
+                  attribution:
+                    '© <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                }
+              )
+            );
+
+            data = data.filter(function(v) {
+              return v["Maturity (new)"] != ""
+            })
+              data = data.filter(function(v) {
+              return v["Include"] == "TRUE"
+            })
+              data = data.filter(function(v) {
+              return v["Founded Year"] != ""
+            })
+
 
 
               spinner.stop();
-              d3.select("#button-16").style("display", "block")
-              d3.select(".dropdown-industry").style("display", "inline-block")
+              //d3.select("#button-16").style("display", "block")
+              d3.select("#button-17").style("display", "block")
+              d3.select(".dropdown-client").style("display", "inline-block")
               d3.select("#save-button").style("display", "block")
               d3.select(".chart-title").style("display", "")
+              //chartLogo.style("display", "block")
 
               d3.json("assets/world_countries.json").then(function(json) {
 
+                //d3.csv("assets/worldcities.csv").then(function(cityData) {
+
+
               
 
-              var focusAreaOrder = desc.map(function(d) {
+              /*var focusAreaOrder = desc.map(function(d) {
                 return d["Opportunity Space"].toLowerCase()
               });
 
               var themeOrder = [... new Set(desc.map(function(d) {
                 return d["Theme"]
-              }))]
+              }))]*/
 
               // Filter data for startups noot in description:
-              new_data = []
+             /* new_data = []
               data.forEach(function(d) {
                 d["Opportunity Space"] = d["Opportunity Space"].toLowerCase()
                 if (d["Opportunity Space"] === "") {
@@ -1595,23 +1646,35 @@
                 } else {
                   new_data.push(d)
                 }
+              })*/
+
+            //var q = d3.queue();
+            //var geocoder = L.mapbox.geocoder("mapbox.places");
+
+
+
+            /*data_city.forEach(function(v) {
+              cityData.forEach(function(w) {
+                if (v.key == w.city && v.values[0].Location == w.country) {
+                  v.cityLat = +w.lat
+                  v.cityLng = +w.lng
+                }
               })
+              if (v.cityLat == null) {
+                  q.defer(getLocation2, v);
+              }
+            })*/
 
-              data = new_data
+            function getLocation2(data, callback) {
+                console.log(data.key + ", " + data.values[0].Location)
 
-            data = data.filter(function(d) {
-              return d["Opportunity Space"] !== "";
-            });
-  
-            data = data.filter(function(d) {
-              return d["Year Founded"] !== "";
-            });
+                  geocoder.query(data.key + ", " + data.values[0].Location, function (error, point) {
+                    data.cityLat = point.latlng[0]
+                    data.cityLng = point.latlng[1]
+                  });
 
-             data = data.filter(function(d) {
-              return d["Maturity"] !== "";
-            });
-
-
+              callback(null);
+            }
             
               json.features.push({"type": "features", "properties": {"name": "Singapore"}, "geometry": {"type": "Polygon", "coordinates": [[0, 0]]}})
               json.features.push({"type": "features", "properties": {"name": "Bahrain"}, "geometry": {"type": "Polygon", "coordinates": [[0, 0]]}})
@@ -1645,23 +1708,95 @@
                 }
                 return modes;
               }
+
+              function city_hover(d, i) {
+                d3.selectAll(".city-circle").attr("fill", function(v) {
+                  if (d.key == v.key) {
+                    return "#247DC5"
+                  } else {
+                    return "#7DCCFF"
+                  }
+                }).attr("stroke", function(v) {
+                  if (d.key == v.key) {
+                    return "#247DC5"
+                  } else {
+                    return "#7DCCFF"
+                  }
+                })
+
+                var tooltip = "<div>" + d.key + "<\/div>";
+                tooltip += "<div>Startups: " + d.values.length + "<\/div>";
+                d3.select(".map-tooltip")
+                  .html(tooltip)
+                  .style("top", function() {
+                    return d3.event.y + "px";
+                  })
+                  .style("left", function() {
+                    return (d3.event.x-136) + "px";
+                  })
+                  .style("display", "");
+                
+                d3.select(".sidebar-title").html(d.key);
+
+                startup_list = [];
+                d.values.forEach(function(w) {
+                    var obj = {
+                      "Startup Name": w["Startup Name"],
+                      Funding: w["Funding amount ($)"],
+                      Website: w["Website"],
+                      "Founded Year": w["Founded Year"]
+                    };
+                    startup_list.push(obj);
+                });
+                var table = "";
+                table += "<table class='startup-table'>";
+                  table +=
+                    "<tr class='table-header'><td>Company:<\/td><td>Funding:<\/td><td>Founded Year:<\/td><\/tr>"
+                startup_list.forEach(function(v) {
+                  table +=
+                    "<tr><td><a href='" + v.Website + "' target='_blank'>" +
+                    v["Startup Name"] +
+                    "</a><\/td><td>$" +
+                      formatFunding(v.Funding) +
+                    "<\/td><td>" +
+                    v["Founded Year"] +
+                    "<\/td><\/tr>";
+                });
+                table += "<\/table>";
+                d3.select("#startup-list").html(table);
+
+              }
+
+
   
               function country_hover(d, i) {
+
                 d3.selectAll(".country-circle")
-                  .attr("fill", "#82ADBD")
-                  .attr("stroke", "#82ADBD");
-                d3.select(this)
-                  .attr("fill", "#132A54")
-                  .attr("stroke", "#132A54");
+                  .attr("fill", function(v) {
+                    if (v.properties.name === d.properties.name) {
+                      return "#247DC5"
+                    } else {
+                      return "#7DCCFF"
+                    }
+                    
+                  })
+                  .attr("stroke", function(v) {
+                    if (v.properties.name === d.properties.name) {
+                      return "#247DC5"
+                    } else {
+                      return "#7DCCFF"
+                    }
+                  });
+ 
                 var tooltip = "<div>" + d.properties.name + "<\/div>";
                 tooltip += "<div>Startups: " + d.properties.startups + "<\/div>";
                 d3.select(".map-tooltip")
                   .html(tooltip)
                   .style("top", function() {
-                    return leftCentroids[i][1] + "px";
+                    return d3.event.y + "px";
                   })
                   .style("left", function() {
-                    return leftCentroids[i][0] + "px";
+                    return (d3.event.x-136) + "px";
                   })
                   .style("display", "");
   
@@ -1669,12 +1804,12 @@
   
                 startup_list = [];
                 data.forEach(function(w) {
-                  if (w.Country === d.properties.name) {
+                  if (w.Location === d.properties.name) {
                     var obj = {
-                      "Company Name": w["Company Name"],
-                      Funding: w["Total funding (US$)"],
+                      "Startup Name": w["Startup Name"],
+                      Funding: w["Funding amount ($)"],
                       Website: w["Website"],
-                      "Year Founded": w["Year Founded"]
+                      "Founded Year": w["Founded Year"]
                     };
                     startup_list.push(obj);
                   }
@@ -1686,11 +1821,11 @@
                 startup_list.forEach(function(v) {
                   table +=
                     "<tr><td><a href='" + v.Website + "' target='_blank'>" +
-                    v["Company Name"] +
+                    v["Startup Name"] +
                     "</a><\/td><td>$" +
                       formatFunding(v.Funding) +
                     "<\/td><td>" +
-                    v["Year Founded"] +
+                    v["Founded Year"] +
                     "<\/td><\/tr>";
                 });
                 table += "<\/table>";
@@ -1740,44 +1875,52 @@
                           .attr("height", tmp_height);
 
                           if (i === 0) {
-                            var hor = tmp_width - 190
+                            var hor = tmp_width - 170
                             var ver = tmp_height + 45;
                           }
                           if (i === 1) {
-                            var hor = tmp_width - 320;
-                            var ver = tmp_height - 0;
+                            var hor = tmp_width - 290;
+                            var ver = tmp_height + 20;
                           }
                           if (i === 2) {
                             var hor = tmp_width - 340;
-                            var ver = tmp_height - 100;
+                            var ver = tmp_height - 20;
                           }
                           if (i === 3) {
-                            var hor = tmp_width - 315;
-                            var ver = tmp_height - 270;
+                            var hor = tmp_width - 335;
+                            var ver = tmp_height - 170;
                           }
                           if (i === 4) {
-                            var hor = tmp_width - 210;
-                            var ver = tmp_height - 330;
+                            var hor = tmp_width - 290;
+                            var ver = tmp_height - 290;
                           }
                           if (i === 5) {
-                            var hor = tmp_width - 10;
-                            var ver = tmp_height - 340;
+                            var hor = tmp_width - 180;
+                            var ver = tmp_height - 330;
                           }
                           if (i === 6) {
-                            var hor = tmp_width + 30;
-                            var ver = tmp_height - 280;
+                            var hor = tmp_width - 15;
+                            var ver = tmp_height - 330;
                           }
                           if (i === 7) {
-                            var hor = tmp_width + 40;
-                            var ver = tmp_height - 110;
+                            var hor = tmp_width + 20;
+                            var ver = tmp_height - 290;
                           }
                           if (i === 8) {
-                            var hor = tmp_width + 30;
-                            var ver = tmp_height + 10;
+                            var hor = tmp_width + 40;
+                            var ver = tmp_height - 180;
                           }
                           if (i === 9) {
-                            var hor = tmp_width - 5;
-                            var ver = tmp_height + 35;
+                         var hor = tmp_width + 40;
+                            var ver = tmp_height - 10;
+                          }
+                          if (i === 10) {
+                            var hor = tmp_width + 25;
+                            var ver = tmp_height + 25;
+                          }
+                          if (i === 11) {
+                            var hor = tmp_width - 15;
+                            var ver = tmp_height + 45;
                           }
 
                           var tmp_chartSVG = tmp_svg
@@ -1786,8 +1929,8 @@
 
                           if (radial === "maturity") {
                             
-                            var tmp_existingSegments = tmp_chartSVG
-                              .selectAll("existing-segments")
+                            var tmp_nascentSegments = tmp_chartSVG
+                              .selectAll("nascent-segments")
                               .data([v])
                               .enter()
                               .append("path")
@@ -1795,20 +1938,20 @@
                               .attr("class", function(d) {
      
                                 return (
-                                  "existing-segments segment-" +
+                                  "nascent-segments segment-" +
                                   d.data.value.key.replace(/ /g, "-").replace(/&/g, "and")
                                 );
                               })
                               .attr("id", function(d) {
                                 return (
-                                  "tmp-existing-segment-" +
+                                  "tmp-nascent-segment-" +
                                   d.data.value.key.replace(/ /g, "-").replace(/&/g, "and")
                                 );
                               })
                               .style("stroke", "white")
                               .style("stroke-width", "2px")
                               .attr("fill", "#DFDFDF") //F4F4F4
-                              .attr("d", existingArc);
+                              .attr("d", nascentArc);
           
                             var tmp_emergingSegments = tmp_chartSVG
                               .selectAll("emerging-segments")
@@ -1833,28 +1976,28 @@
                               .attr("fill", "#E9E9E9")
                               .attr("d", emergingArc);
           
-                            var tmp_distantSegments = tmp_chartSVG
-                              .selectAll("distant-segments")
+                            var tmp_matureSegments = tmp_chartSVG
+                              .selectAll("mature-segments")
                               .data([v])
                               .enter()
                               .append("path")
                               .style("fill-opacity", 1)
                               .attr("class", function(d) {
                                 return (
-                                  "distant-segments segment-" +
+                                  "mature-segments segment-" +
                                   d.data.value.key.replace(/ /g, "-").replace(/&/g, "and")
                                 );
                               })
                               .attr("id", function(d) {
                                 return (
-                                  "tmp-distant-segment-" +
+                                  "tmp-mature-segment-" +
                                   d.data.value.key.replace(/ /g, "-").replace(/&/g, "and")
                                 );
                               })
                               .style("stroke", "white")
                               .style("stroke-width", "2px")
                               .attr("fill", "#F4F4F4") //DFDFDF
-                              .attr("d", distantArc);
+                              .attr("d", matureArc);
                           } else {  
                             count_by_year.forEach(function(w) {
                               var tmpArc = d3
@@ -1873,19 +2016,14 @@
                             });
                           }
 
-                                var tmpSegmentsLabelBand = tmp_chartSVG
+                    var tmpSegmentsLabelBand = tmp_chartSVG
               .selectAll("path.segment-band")
               .data([chartPieData[i]])
               .enter()
               .append("path")
               .classed("segment-band", true)
               .attr("d", segmentLabelBandArc)
-              .attr("id", function(d) {
-                return (
-                  d.data.value.key.toLowerCase().replace(/ /g, "-") + "-band-temp"
-                );
-              })
-              .attr("fill", "#82ADBD")
+              .attr("fill", "#7DCCFF")
               .each(function(d, i) {
                 var firstArcSection = /(^.+?)L/;
                 var newArc = firstArcSection.exec(d3.select(this).attr("d"))[1];
@@ -1905,12 +2043,12 @@
                   d.newArc =
                     "M" + d.newStart + "A" + d.middleSec + "0 0 0 " + d.newEnd;
                 }
-                d.hiddenArc = chartSVG
+                d.hiddenArc = tmp_chartSVG
                   .append("path")
                   .attr("class", "hiddenDonutArcs")
                   .attr("id", function() {
                     return (
-                      "hidden-tmp-opp-space-band-" + d.data.value.key.replace(/ /g,"-")
+                      "hidden-opp-space-tmp-band-" + d.data.value.key.replace(/_/g," ")
                     );
                   })
                   .attr("d", d.newArc)
@@ -1919,7 +2057,7 @@
 
               var tmpOppSpaceLabels = tmp_chartSVG
                 .selectAll(".opp-space-label-text")
-                .data(chartPieData)
+                .data([chartPieData[i]])
                 .enter()
                 .append("g")
                 .selectAll(".test-class")
@@ -1941,9 +2079,9 @@
                       return "-1.1em";
                     } else {
                       if (i === 0) {
-                        return "-2.6em";
+                        return "-1.6em";
                       } else {
-                        return "-1.3em";
+                        return "-0.6em";
                       }
                     }
                   } else {
@@ -1951,9 +2089,9 @@
                       return "1.8em";
                     } else {
                       if (i === 0) {
-                        return "2.1em";
+                        return "1.3em";
                       } else {
-                        return "3.3em";
+                        return "2.3em";
                       }
                     }
                   }
@@ -1962,8 +2100,8 @@
                 .attr("xlink:href", function(d, i) {
                   return (
                     "#" +
-                    "hidden-tmp-opp-space-band-" +
-                    d.text_data.toLowerCase().replace(/ /g,"-")
+                    "hidden-opp-space-tmp-band-" +
+                    d.text_data.toLowerCase()
                   );
                 })
                 .attr("startOffset", "50%")
@@ -1972,6 +2110,8 @@
                 });
 
 
+  
+
                           var tmp_nodes = tmp_chartSVG
                           .selectAll("nodes")
                           .data(data)
@@ -1979,8 +2119,8 @@
                           .append("circle")
                           .attr("class", "nodes")
                           .attr("r", function(d) {
-                            if (d["Funding Stage"] !== "Acquired") {
-                              return 3;
+                            if (d["Funding Round"] !== "Acquired") {
+                              return nodeRadius;
                             }
                           })
                           .attr("opacity", function(d) {
@@ -1988,7 +2128,7 @@
                           })
                           .attr("fill", function(d) {
                             return nodeColorScale(
-                              fundingCategoryScale(d["Funding Stage"])
+                              fundingCategoryScale(d["Funding Round"])
                             );
                           })
                           .attr("cx", function(d) {
@@ -2007,7 +2147,7 @@
                           })
                           .attr("opacity", function(d) {
                             if (
-                              d["Opportunity Space"] === chartPieData[i].data.value.key
+                              d["Consolidated Tag"] === chartPieData[i].data.value.key
                             ) {
                               return d.opacity;
                             } else {
@@ -2033,15 +2173,15 @@
                             return d.opacity;
                           })
                           .attr("width", function(d) {
-                            if (d["Funding Stage"] === "Acquired") {
-                              return 7.7;
+                            if (d["Funding Round"] === "Acquired") {
+                              return nodeOtherWidth
                             } else {
                               return 0;
                             }
                           })
                           .attr("height", function(d) {
-                            if (d["Funding Stage"] === "Acquired") {
-                              return 7.7;
+                            if (d["Funding Round"] === "Acquired") {
+                              return nodeOtherWidth
                             } else {
                               return 0;
                             }
@@ -2061,7 +2201,7 @@
                           })
                           .attr("opacity", function(d) {
                             if (
-                              d["Opportunity Space"] === chartPieData[i].data.value.key
+                              d["Consolidated Tag"] === chartPieData[i].data.value.key
                             ) {
                               return d.opacity;
                             } else {
@@ -2076,7 +2216,7 @@
                 })
 
                 var popup_data = data.filter(function(d) {
-                    return d["Opportunity Space"].toLowerCase() === opp_space;
+                    return d["Consolidated Tag"].toLowerCase() === opp_space;
                   });
 
                   var numStartups = popup_data.length
@@ -2086,7 +2226,7 @@
                   yearTotal = 0
                   maturityList = []
                   popup_data.forEach(function(v) {
-                    yearTotal += +v["Year Founded"]
+                    yearTotal += +v["Founded Year"]
                     if (v.Maturity !== "") {
                       maturityList.push(v.Maturity)
                     }
@@ -2096,8 +2236,8 @@
                   var maturityMode = modeArray(maturityList)
 
                   d3.select("#theme-tag").html(popup_data[0]["Theme"])
-                  d3.select("#focus-area-tag").html(popup_data[0]["Opportunity Space"])
-                  d3.select(".opportunity-space-title").html(popup_data[0]["Opportunity Space"])
+                  d3.select("#focus-area-tag").html(popup_data[0]["Consolidated Tag"])
+                  d3.select(".opportunity-space-title").html(popup_data[0]["Consolidated Tag"])
                   d3.select(".opportunity-space-description").html(popup_data[0]["Opportunity Space Description"])
                   d3.select("#total-no-startups").html(numStartups)
                   d3.select("#total-avg-funding").html("$" + formatFunding(funding_amount) + ", $" + formatFunding(avgFunding))
@@ -2110,7 +2250,7 @@
                   heroPopupData = []
                   hero_data.forEach(function(v) {
   
-                      if (v["Opportunity Space"].toLowerCase() === opp_space) {
+                      if (v["Consolidated Tag"].toLowerCase() === opp_space) {
                         heroPopupData.push(v)
                       }
                   })
@@ -2118,7 +2258,7 @@
                   var extra = [0, 1, 2]
                   heroPopupData.forEach(function(v, i) {
                     extra = extra.splice(1)
-                      if (v["Company Name"] !== "COMPETITOR") {
+                      if (v["Startup Name"] !== "COMPETITOR") {
                         d3.select("#hs-" + i).style("display", "")
 
                           if (v["Logo URL"] !== "") {
@@ -2131,22 +2271,22 @@
                             var hs_prb = "<span style='font-family: Graphik Bold'>Problem:<\/span> "
                                 hs_prb += v["Problem"]
                                 var hs_sln = "<span style='font-family: Graphik Bold'>Solution:<\/span> "
-                                    hs_sln += v["Solution"]
+                                    hs_sln += v["Solution "]
 
                                     var hs_website = "<span style='font-family: Graphik Bold'>Website:<\/span> "
                                         hs_website += "<a href='" + v["Website"] + "' target='_blank'>" + v["Website"] + "<\/a>"
 
                                     var hs_location = "<span style='font-family: Graphik Bold'>Location:<\/span> "
-                                        hs_location += v["Country"]
+                                        hs_location += v["Location"]
 
                                         var hs_round = "<span style='font-family: Graphik Bold'>Funding Round:<\/span> "
-                                            hs_round += v["Funding Stage"]
+                                            hs_round += v["Funding Round"]
     
                                         var hs_amount = "<span style='font-family: Graphik Bold'>Funding Amount:<\/span> "
-                                            hs_amount += v["Total funding (US$)"]
+                                            hs_amount += v["Funding amount ($)"]
         
                                             var hs_year = "<span style='font-family: Graphik Bold'>Year:<\/span> "
-                                                hs_year += v["Year Founded"]
+                                                hs_year += v["Founded Year"]
                             
 
                         d3.select("#hs-logo-" + i).attr("src", logo_url)
@@ -2183,8 +2323,8 @@
                       d3.select(".popup-analysis-label").html("Insight")
                       bar_data = popup_data
                       bar_data.forEach(function(v) {
-                          v.Funding = v["Total funding (US$)"]
-                          v["Year Founded"] = v["Year Founded"]
+                          v.Funding = v["Funding amount ($)"]
+                          v["Founded Year"] = v["Founded Year"]
                       })
                       update_bar("Amount of Funding")
                     } else {
@@ -2204,21 +2344,48 @@
                   })
               }
 
+              function city_click(d) {
+                d3.select(".popup-container").attr("class", "popup-container added")
+                d3.select(".popup-bg").style("display", "")
+                d3.select(".popup-section-a").style("display", "none")
+                d3.select(".popup-section-b").style("display", "")
+                d3.select(".analysis-btn").style("display", "none")
+                d3.select(".map-tooltip").style("display", "none")
+
+
+                bar_data = [];
+                d.values.forEach(function(w) {
+    
+                        var obj = {
+                            "Startup Name": w["Startup Name"],
+                            Funding: w["Funding amount ($)"],
+                            Website: w["Website"],
+                            'Founded': w["Founded Year"],
+                            'Maturity': w["Maturity (new)"]
+                          };
+                          bar_data.push(obj);
+    
+                })
+                update_bar("Amount of Funding")
+              }
+
               function country_click(d) {
                 d3.select(".popup-container").attr("class", "popup-container added")
                 d3.select(".popup-bg").style("display", "")
                 d3.select(".popup-section-a").style("display", "none")
                 d3.select(".popup-section-b").style("display", "")
                 d3.select(".analysis-btn").style("display", "none")
+                d3.select(".map-tooltip").style("display", "none")
 
                 bar_data = [];
                 data.forEach(function(w) {
-                    if (w.Country === d.properties.name) {
+                    if (w.Location === d.properties.name) {
                         var obj = {
-                            "Company Name": w["Company Name"],
-                            Funding: w["Total funding (US$)"],
+                            "Startup Name": w["Startup Name"],
+                            Funding: w["Funding amount ($)"],
                             Website: w["Website"],
-                            'Year Founded': w["Year Founded"]
+                            'Founded': w["Founded Year"],
+                            'Maturity': w["Maturity (new)"]
                           };
                           bar_data.push(obj);
                     }
@@ -2227,29 +2394,20 @@
 
               }
 
-  
-              var leftCentroids = json.features.map(function(feature) {
-                return leftPath.centroid(feature);
-              });
-  
-  
-  
-              // manual adjustments to country centroids:
-              leftCentroids[6] = [499.3566464049186, 484.20930510242];
-              leftCentroids[121] = [381.8299314691847, 98.47135868701795];
-              
-              leftCentroids[178] = [708, 370]
+          /* Initialize the SVG layer */
+              var svgLayer = L.svg();
+              svgLayer.addTo(map);
 
-              leftCentroids[167] = [200, 330]
-              leftCentroids[28] = [493, 304];
-              leftCentroids[177] = [743, 438]
-
-              leftCentroids[170] = [756, 410];
+  
+              var mapSvg = d3.select("#map").select("svg").style("pointer-events", "auto")
+              var mapG = d3.select("#map").select("svg").append("g");
+              mapG.attr("class", "leaflet-zoom-hide");
+  
   
               data_country = d3
                 .nest()
                 .key(function(d) {
-                  return d.Country;
+                  return d.Location;
                 })
                 .entries(data);
   
@@ -2262,13 +2420,13 @@
 
               data.forEach(function(v) {
                 json.features.forEach(function(w) {
-                  if (v["Country"] === w.properties.name) {
+                  if (v["Location"] === w.properties.name) {
                     v.json_country = w.properties.name;
                   }
                 });
               });
   
-              var countries = leftG
+              /*var countries = leftG
                 .selectAll(".country")
                 .data(json.features)
                 .enter()
@@ -2278,12 +2436,12 @@
                 .attr("id", function(d) {
                   return "country_" + d.properties.name.replace(/ /g, "-");
                 })
-                .attr("fill", "#EFEFEF");
+                .attr("fill", "#EFEFEF");*/
   
               json.features.forEach(function(w) {
                 w.properties.startups = 0;
                 data.forEach(function(v) {
-                  if (v["Country"] === w.properties.name) {
+                  if (v["Location"] === w.properties.name) {
                     v.json_country = w.properties.name;
                     w.properties.startups += 1;
                   }
@@ -2300,28 +2458,147 @@
               .domain([1,max_country])
               .range([2.6, 30]);
   
-              leftG
-                .selectAll("circle")
+ 
+              json.features = json.features.filter(function(d) {
+                return d.geometry.coordinates[0].length > 2
+              })
+
+              /*q.awaitAll(function (error) {
+                if (error) throw error;
+                setTimeout(function () {
+                  mapG
+                  .selectAll(".city-circle")
+                  .data(data_city.filter(function(v) {
+                    return v.cityLat != null
+                  }))
+                  .enter()
+                  .append("circle")
+                  .classed("city-circle", true)
+                  .attr("r", function(d) {
+                    if (d.values.length > 0) {
+                      return countryCircleScale(d.values.length)
+                    } 
+                })
+                  .attr("cx", function(d, i) {
+                  return map.latLngToLayerPoint(new L.LatLng(d.cityLat, d.cityLng)).x
+                })
+                .attr("cy", function(d, i) {
+                    return map.latLngToLayerPoint(new L.LatLng(d.cityLat, d.cityLng)).y
+                })
+                .style("cursor", "pointer")
+                .attr("fill", "#7DCCFF")
+                .attr("stroke", "#7DCCFF")
+                .style("visibility", "hidden")
+                .on("mouseover", city_hover)
+                .on("click", city_click)
+
+
+                mapG
+                .selectAll(".country-circle")
                 .data(json.features)
                 .enter()
                 .append("circle")
                 .classed("country-circle", true)
                 .attr("r", function(d) {
                   if (d.properties.startups > 0) {
-                      
                     return countryCircleScale(d.properties.startups);
                   }
                 })
                 .attr("cx", function(d, i) {
-                  return leftCentroids[i][0];
+                  let arr = d.geometry.coordinates[0]
+                  if (arr.length < 2) {
+                    arr = d.geometry.coordinates[0][0]
+                  }
+                  if (arr != [0, 0]) {
+                  return map.latLngToLayerPoint(new L.LatLng(center(arr)[1], center(arr)[0])).x
+                  }
+
                 })
                 .attr("cy", function(d, i) {
-                  return leftCentroids[i][1];
+                  let arr = d.geometry.coordinates[0]
+                  if (arr.length < 2) {
+                    arr = d.geometry.coordinates[0][0]
+                  }
+                  if (arr != [0,0]) {
+                    return map.latLngToLayerPoint(new L.LatLng(center(arr)[1], center(arr)[0])).y
+                }
+
                 })
-                .attr("fill", "#82ADBD")
-                .attr("stroke", "#82ADBD")
-                .on("mouseover", country_hover)
+                .attr("fill", "#7DCCFF")
+                .attr("stroke", "#7DCCFF")
+                .style("cursor", "pointer")
+                .on("mouseover", function(d) {
+                  country_hover(d)
+                })
                 .on("click", country_click)
+
+                }, 2000);*/
+                });
+
+
+
+
+                function reset(e) {
+                  d3.select(".map-tooltip").style("display", "none");
+                mapG.selectAll(".country-circle")
+                .attr("cx", function(d, i) {
+                  let arr = d.geometry.coordinates[0]
+                  if (arr.length < 2) {
+                    arr = d.geometry.coordinates[0][0]
+                  }
+                  if (arr != [0, 0]) {
+                  return map.latLngToLayerPoint(new L.LatLng(center(arr)[1], center(arr)[0])).x
+                  }
+
+                })
+                .attr("cy", function(d, i) {
+                  let arr = d.geometry.coordinates[0]
+                  if (arr.length < 2) {
+                    arr = d.geometry.coordinates[0][0]
+                  }
+                  if (arr != [0,0]) {
+                    return map.latLngToLayerPoint(new L.LatLng(center(arr)[1], center(arr)[0])).y
+                }
+
+                })
+                .style("visibility", function() {
+                  if (e.target._zoom <= 3) {
+                    return "visible"
+                  } else {
+                    return "hidden"
+                  }
+                })
+                .attr("fill", "#7DCCFF")
+                .attr("stroke", "#7DCCFF");
+
+                 mapG.selectAll(".city-circle")
+                  .attr("cx", function(d, i) {
+                  return map.latLngToLayerPoint(new L.LatLng(d.cityLat, d.cityLng)).x
+                })
+                .attr("cy", function(d, i) {
+                    return map.latLngToLayerPoint(new L.LatLng(d.cityLat, d.cityLng)).y
+                })
+                .style("visibility", function() {
+                  if (e.target._zoom > 3) {
+                    return "visible"
+                  } else {
+                    return "hidden"
+                  }
+                })
+                .attr("fill", "#7DCCFF")
+                .attr("stroke", "#7DCCFF");
+              }
+
+            map.on("zoom", function(e) {
+              reset(e)
+            })
+
+            map.on("drag", function() {
+              d3.select(".map-tooltip").style("display", "none");
+            })
+
+
+
   
               // END::END
   
@@ -2331,20 +2608,20 @@
   
             // correct formatting of total funding values to numbers
             data.forEach(function(d) {
-              d["Total funding (US$)"] = d["Total funding (US$)"].replace(
+              d["Funding amount ($)"] = d["Funding amount ($)"].replace(
                 /,/g,
                 ""
               );
-              if (d["Total funding (US$)"] === "" || d["Total funding (US$)"] === "Unfunded" || d["Total funding (US$)"] === "Funded") {
-                d["Total funding (US$)"] = 0;
+              if (d["Funding amount ($)"] === "" || d["Funding amount ($)"] === "Unfunded" || d["Funding amount ($)"] === "Funded") {
+                d["Funding amount ($)"] = 0;
               }
   
-              d["Total funding (US$)"] = (d["Total funding (US$)"])
-              d["Opportunity Space"] = d["Opportunity Space"]
+              d["Funding amount ($)"] = (d["Funding amount ($)"])
+              d["Consolidated Tag"] = d["Consolidated Tag"]
                 .toLowerCase()
                 .replace(/\//g, "_");
   
-              desc.forEach(function(v) {
+              /*desc.forEach(function(v) {
                 if (
                   d["Opportunity Space"] ===
                   v["Opportunity Space"].toLowerCase().replace(/\//g, "_")
@@ -2353,7 +2630,7 @@
                   d["Theme Definition"] = v["Theme Definition"];
                   d["Opportunity Space Description"] = v["Description"]
                 }
-              });
+              });*/
             });
   
             /* var oppSpace_order = [
@@ -2368,23 +2645,12 @@
   
               */
 
-              function focusAreaSort(a, b) {
+              /*function focusAreaSort(a, b) {
                 var valA = focusAreaOrder.indexOf(a.replace(/_/g, "/"))
                 var valB = focusAreaOrder.indexOf(b.replace(/_/g, "/"))
                 return valA < valB ? -1 : valA > valB ? 1 : valA >= valB ? 0 : NaN;
               }
   
-            /* function focusAreaSort(a, b) {
-              for (i = 0; i < focusAreaOrder.length; i++) {
-                if (a === focusAreaOrder[i]) {
-                  var valA = i;
-                }
-                if (b === focusAreaOrder[i]) {
-                  var valB = i;
-                }
-              }
-              return valA < valB ? -1 : valA > valB ? 1 : valA >= valB ? 0 : NaN;
-            } */
   
             //CHANGE HERE:
             function themeSort(a, b) {
@@ -2397,13 +2663,62 @@
                 }
               }
               return valA < valB ? -1 : valA > valB ? 1 : valA >= valB ? 0 : NaN;
-            }
+            }*/
+
+            var tempOrder = d3.nest()
+              .key(function(d) {
+                return d["Consolidated Tag"]
+              })
+              .sortKeys(function(a,b) {
+                return d3.ascending(a, b)
+              })
+              .entries(data)
+
+            tempOrder = tempOrder.map(function(v) {
+              return v.key
+            })
+            console.log('tempOrder', tempOrder)
+
+/*
+            tempOrder.forEach(function(v) {
+              v.values.sort(function(a, b) {
+                return d3.ascending(a["Opp Space"], b["Opp Space"])
+              })
+            })
+
+            var themeOrder = []
+            var focusAreaOrder = []
+            tempOrder.forEach(function(v) {
+              themeOrder.push(v.key)
+              v.values.forEach(function(w) {
+                focusAreaOrder.push(w["Opp Space"].toLowerCase())
+              })
+            })*/
+          
+            
+            /*var focusAreaOrder = d3.nest()
+              .key(function(d) {
+                return d["Opportunity Space"]
+              })
+              .entries(data)
+              .sort(function(a, b) {
+                return d3.descending(a.values.length, b.values.length)
+              })
+              .map(function(v) {
+                return v.key
+              }).slice(0,12)*/
+
+              var focusAreaSort = tempOrder
+
+            data = data.filter(function(v) {
+              return tempOrder.indexOf(v["Consolidated Tag"]) >= 0
+            })
 
   
             //CHANGE HERE:
             var focusAreaeBandColorScale = d3
             .scaleOrdinal()
-            .domain(focusAreaOrder)
+            .domain(tempOrder)
             .range([
               "#5FBDFB",
               //"#5FBDFB",
@@ -2460,7 +2775,7 @@
             ];
   
             var fundingCategoryRange = [
-              "Unfunded",
+              "Undisclosed",
               "Seed",
               "Series A+",
               "Series A+",
@@ -2477,7 +2792,7 @@
               .domain(fundingCategoryDomain)
               .range(fundingCategoryRange);
   
-            var colors = ["#D75059", "#82D4BB", "#388659"];
+            var colors = ["#D75059", "#01AAFF", "#388659"];
   
             var nodeColorScale = d3
               .scaleOrdinal()
@@ -2487,12 +2802,25 @@
             var focusAreaSorted = d3
               .nest()
               .key(function(d) {
-                return d["Opportunity Space"];
+                
+                return d["Consolidated Tag"];
               })
-              .sortKeys(focusAreaSort)
+              .sortKeys(function(a, b) {
+                let aVal = 0
+                let bVal = 0
+                focusAreaSort.forEach(function(v, index) {
+                  if (a === v) {
+                    aVal = index
+                  }
+                  if (b === v) {
+                    bVal = index
+                  }
+                })
+                return d3.ascending(aVal, bVal)
+              })
               .rollup(function(v) {
                 var totalFunding = d3.sum(v, function(d) {
-                  return +d["Total funding (US$)"];
+                  return +d["Funding amount ($)"];
                 });
                 return totalFunding;
               })
@@ -2502,33 +2830,45 @@
             var count_by_focus_area = d3
               .nest()
               .key(function(d) {
-                return d["Opportunity Space"];
+                return d["Consolidated Tag"];
               })
-              .sortKeys(focusAreaSort)
+              .sortKeys(function(a, b) {
+                let aVal = 0
+                let bVal = 0
+                focusAreaSort.forEach(function(v, index) {
+                  if (a === v) {
+                    aVal = index
+                  }
+                  if (b === v) {
+                    bVal = index
+                  }
+                })
+                return d3.ascending(aVal, bVal)
+              })
               .entries(data);
   
-            var count_by_themes = d3
+            /*var count_by_themes = d3
               .nest()
               .key(function(d) {
                 return d["Theme"];
               })
               .sortKeys(themeSort)
-              .entries(data);
+              .entries(data);*/
   
             var count_by_maturity = d3
               .nest()
               .key(function(d) {
-                return d["Maturity"];
+                return d["Maturity (new)"];
               })
               .rollup(function(v) {
                 return v.length;
               })
               .entries(data);
   
-            var count_by_industry = d3
+            var count_by_client = d3
               .nest()
               .key(function(d) {
-                return d["Industry"];
+                return d["Client Served"];
               })
               .sortKeys(d3.ascending)
               .rollup(function(v) {
@@ -2539,7 +2879,7 @@
             var count_by_funding_stage = d3
               .nest()
               .key(function(d) {
-                return d["Funding Stage"];
+                return d["Funding Round"];
               })
               .rollup(function(v) {
                 return v.length;
@@ -2549,7 +2889,7 @@
             var count_by_year = d3
               .nest()
               .key(function(d) {
-                return d["Year Founded"];
+                return d["Founded Year"];
               })
               .sortKeys(d3.ascending)
               .rollup(function(v) {
@@ -2601,9 +2941,9 @@
               } */
   
             var maturity_list = [
-              { name: "Existing", inner: 50, outer: 140 },
-              { name: "Emerging", inner: 140, outer: 220 },
-              { name: "Distant", inner: 220, outer: 300 }
+              { name: "Nascent", inner: 50, outer: 180 },
+              { name: "Emerging", inner: 180, outer: 240 },
+              { name: "Mature", inner: 240, outer: 300 }
             ];
   
             var backgroundArc = d3
@@ -2611,7 +2951,7 @@
               .innerRadius(maturity_list[0].inner)
               .outerRadius(maturity_list[2].outer);
   
-            var existingArc = d3
+            var nascentArc = d3
               .arc()
               .innerRadius(maturity_list[0].inner)
               .outerRadius(maturity_list[0].outer);
@@ -2621,7 +2961,7 @@
               .innerRadius(maturity_list[1].inner)
               .outerRadius(maturity_list[1].outer);
   
-            var distantArc = d3
+            var matureArc = d3
               .arc()
               .innerRadius(maturity_list[2].inner)
               .outerRadius(maturity_list[2].outer);
@@ -2634,53 +2974,47 @@
             var chartPie = d3
               .pie()
               .value(function(d) {
-                return d.value.value + 2000000000000;
+                return 2000000000000;
               })
               .sort(function(a, b) {
-                var valA = focusAreaOrder.indexOf(a.value.key.replace(/_/g, "/"))
-                var valB = focusAreaOrder.indexOf(b.value.key.replace(/_/g, "/"))
+                var valA = tempOrder.indexOf(a.value.replace(/_/g, "/"))
+                var valB = tempOrder.indexOf(b.value.replace(/_/g, "/"))
                 return valA < valB ? -1 : valA > valB ? 1 : valA >= valB ? 0 : NaN;
               });
-  
-            //CHANGE HERE:
-            var outerChartPie = d3
-              .pie()
-              .value(function(d) {
-                var number_of_opp_spaces = [
-                  ...new Set(
-                    d.value.values.map(function(v) {
-                      return v["Opportunity Space"];
-                    })
-                  )
-                ];
-                return number_of_opp_spaces.length;
-              })
-              .sort(themeSort);
-  
-            var outerChartPieData = outerChartPie(d3.entries(count_by_themes));
-  
-            var chartPieData = chartPie(d3.entries(focusAreaSorted));
+    
+            var chartPieData = chartPie(d3.entries(tempOrder))
   
             var yearSegmentColorScale = d3
               .scaleOrdinal()
               .domain(yearList)
               .range(["#f4f4f4"]);
   
-            /*         .range([
-                  "#F6F6F6",
-                  "#F0F0F0",
-                  "#E8E8E8",
-                  "#E0E0E0",
-                  "#DADADA",
-                  "#D2D2D2",
-                  "#C9C9C9",
-                  "#BDBDBD",
-                  "#AFAFAF",
-                  "#9E9E9E",
-                  "#868686",
-                  "#7A7A7A"
-                ]); */
+  
+            clientList = [
+              "All Startups"
+            ];
 
+            count_by_client.forEach(function(v) {
+              if (v.key != "") {
+                clientList.push(v.key)
+              }
+            })
+  
+            var clientSelector = d3
+              .select("#client-selector")
+              .selectAll("a")
+              .data(clientList)
+              .enter()
+              .append("text")
+              .html(function(d) {
+                return "<a href='#'>" + d + "</a>";
+              })
+              .on("click", function(d) {
+                filters.type = d
+                update_opacity();
+                clientFilter = d;
+                d3.select(".dropdown-client").select(".dropbtn").html(d + " <i class='arrow down'> <\/i>")
+              });
 
             // Bar Chart:
             barChartList = ["Amount of Funding", "Founded Year", "Maturity"]
@@ -2698,7 +3032,7 @@
               update_bar(d)
             });
 
-            themeFontData = categoryFontObject[0];
+            /*themeFontData = categoryFontObject[0];
   
             var themeSegments = chartSVG
               .selectAll("theme-segments")
@@ -2706,7 +3040,7 @@
               .enter()
               .append("path")
               .attr("d", themeArc)
-              .attr("fill", "#132A54")
+              .attr("fill", "#247DC5")
               .style("stroke", "white")
               .style("stroke-width", "2px")
               .each(function(d, i) {
@@ -2763,7 +3097,7 @@
                 .attr("startOffset", "50%")
                 .text(function(d) {
                   return d.data.value.key.toUpperCase();
-                });
+                });*/
   
             var backgroundSegments = chartSVG
               .selectAll("background-segments")
@@ -2773,7 +3107,7 @@
               .attr("id", function(d) {
                 return (
                   "background-segment-" +
-                  d.data.value.key.replace(/ /g, "-").replace(/&/g, "and")
+                  d.data.value.replace(/ /g, "-").replace(/&/g, "and")
                 );
               })
               .style("opacity", 0)
@@ -2786,7 +3120,7 @@
                 .outerRadius(v.outer);
   
               var tmpSegment = chartSVG
-                .selectAll("existing-segments")
+                .selectAll("mature-segments")
                 .data(chartPieData)
                 .enter()
                 .append("path")
@@ -2795,7 +3129,7 @@
                   return (
                     v.name.toLowerCase() +
                     "-" +
-                    d.data.value.key.replace(/ /g, "-").replace(/&/g, "and") +
+                    d.data.value.replace(/ /g, "-").replace(/&/g, "and") +
                     "-segment"
                   );
                 })
@@ -2820,18 +3154,17 @@
                     "year-" +
                     v.key +
                     "-" +
-                    d.data.value.key.replace(/ /g, "-").replace(/&/g, "and") +
+                    d.data.value.replace(/ /g, "-").replace(/&/g, "and") +
                     "-segment"
                   );
                 })
                 .attr("d", tmpArc)
-                .attr("opacity", 0)
+                .attr("opacity", 1)
                 .attr("fill", yearSegmentColorScale(v.key))
                 .style("cursor", "pointer")
-                .on("click", function(d) {
-                  //console.log(d)
+                /*.on("click", function(d) {
                   update_popup(d)
-                })
+                })*/
             });
   
             var numSegments = focusAreaSorted.length;
@@ -2856,7 +3189,7 @@
             var labelWidth = (2 * outerRadius * 1.095) / chartPieData.length;
 
               labelFontData = {
-                limit: labelWidth * 0.6
+                limit: labelWidth * 0.35
               };
   
             var segmentsLabelBand = chartSVG
@@ -2868,10 +3201,10 @@
               .attr("d", segmentLabelBandArc)
               .attr("id", function(d) {
                 return (
-                  d.data.value.key.toLowerCase().replace(/ /g, "-") + "-band"
+                  d.data.value.toLowerCase().replace(/ /g, "-") + "-band"
                 );
               })
-              .attr("fill", "#82ADBD")
+              .attr("fill", "#7DCCFF")
               .each(function(d, i) {
                 var firstArcSection = /(^.+?)L/;
                 var newArc = firstArcSection.exec(d3.select(this).attr("d"))[1];
@@ -2896,7 +3229,7 @@
                   .attr("class", "hiddenDonutArcs")
                   .attr("id", function() {
                     return (
-                      "hidden-opp-space-band-" + d.data.value.key.replace(/ /g,"-")
+                      "hidden-opp-space-band-" + d.data.value.replace(/_/g," ")
                     );
                   })
                   .attr("d", d.newArc)
@@ -2913,20 +3246,9 @@
                   labelMouseOut();
                 }
               })
-              .on("click", function(d) {
+              /*.on("click", function(d) {
                   update_popup(d)
-
-                /* if (filterKey === d.data.value.key) {
-                  filterKey = "";
-                  updateNodes("focus area", filterKey);
-                  d3.selectAll(".label-mouse-over-text-clicked").remove();
-                  d3.selectAll(".hover-svg-background-clicked").remove();
-                } else {
-                  filterKey = d.data.value.key;
-                  updateNodes("focus area", filterKey);
-                  hoverInfoFunction(d, "-clicked");
-                } */
-              });
+              }); */
 
               var oppSpaceLabels = chartSVG
                 .selectAll(".opp-space-label-text")
@@ -2938,7 +3260,7 @@
                   var limit = labelFontData.limit;
 
                   return textWrap(
-                    d.data.value.key.toUpperCase().replace(/_/g," "),
+                    d.data.value.toUpperCase().replace(/_/g," "),
                     d.percentage,
                     limit
                   );
@@ -2952,9 +3274,9 @@
                       return "-1.1em";
                     } else {
                       if (i === 0) {
-                        return "-2.6em";
+                        return "-1.6em";
                       } else {
-                        return "-1.3em";
+                        return "-0.6em";
                       }
                     }
                   } else {
@@ -2962,9 +3284,9 @@
                       return "1.8em";
                     } else {
                       if (i === 0) {
-                        return "2.1em";
+                        return "1.3em";
                       } else {
-                        return "3.3em";
+                        return "2.3em";
                       }
                     }
                   }
@@ -2974,7 +3296,7 @@
                   return (
                     "#" +
                     "hidden-opp-space-band-" +
-                    d.text_data.toLowerCase().replace(/ /g,"-")
+                    d.text_data.toLowerCase()
                   );
                 })
                 .attr("startOffset", "50%")
@@ -3166,7 +3488,7 @@
               .on("mouseover", function(d) {
                 keyMouseOver(d, "color");
               })
-              .on("mouseout", keyMouseOut)
+              //.on("mouseout", keyMouseOut)
               .on("click", function(d) {
                 if (filterKey === d) {
                   filterKey = "";
@@ -3335,35 +3657,35 @@
                 .text("Maturity")
                 .attr("fill", "white"); */
   
-            var existingLabelRadius = maturity_list[0].outer - 15;
+            var nascentLabelRadius = maturity_list[0].outer - 15;
             var emergingLabelRadius = maturity_list[1].outer - 15;
-            var distantLabelRadius = maturity_list[2].outer - 15;
+            var matureLabelRadius = maturity_list[2].outer - 15;
   
-            var existingLabel = chartSVG
+            var nascentLabel = chartSVG
               .append("g")
               .classed("maturity-labels", true);
   
-            existingLabel
+            nascentLabel
               .append("def")
               .append("path")
-              .attr("id", "existing-label-path")
+              .attr("id", "nascent-label-path")
               .attr(
                 "d",
                 "m " +
-                  -existingLabelRadius +
+                  -nascentLabelRadius +
                   " 0 a 50 50 0 1 1 " +
-                  2 * existingLabelRadius +
+                  2 * nascentLabelRadius +
                   " 0"
               );
   
-            existingLabel
+            nascentLabel
               .append("text")
               .attr("class", "maturity-label-text")
-              .attr("id", "existing-label-path-text")
+              .attr("id", "nascent-label-path-text")
               .append("textPath")
-              .attr("xlink:href", "#existing-label-path")
+              .attr("xlink:href", "#nascent-label-path")
               .attr("startOffset", "50%")
-              .text("Existing");
+              .text("Nascent");
   
             var emergingLabel = chartSVG
               .append("g")
@@ -3411,46 +3733,53 @@
                     " 0"
                 );
               d.fn = this["year" + d.key + "Label"];
+
+                  d.fn
+                    .append("text")
+                    .attr("class", "year-label-text")
+                    .attr("id", "year-" + d.key + "-label-path-text")
+                    .append("textPath")
+                    .attr("xlink:href", "#year-" + d.key + "-label-path")
+                    .attr("startOffset", "50%")
+                    .text(d.key);
             });
   
-            var distantLabel = chartSVG
+            var matureLabel = chartSVG
               .append("g")
               .classed("maturity-labels", true);
   
-            distantLabel
+            matureLabel
               .append("def")
               .append("path")
-              .attr("id", "distant-label-path")
+              .attr("id", "mature-label-path")
               .attr(
                 "d",
                 "m " +
-                  -distantLabelRadius +
+                  -matureLabelRadius +
                   " 0 a 50 50 0 1 1 " +
-                  2 * distantLabelRadius +
+                  2 * matureLabelRadius +
                   " 0"
               );
   
-            distantLabel
+            matureLabel
               .append("text")
               .attr("class", "maturity-label-text")
-              .attr("id", "distant-label-path-text")
+              .attr("id", "mature-label-path-text")
               .append("textPath")
-              .attr("xlink:href", "#distant-label-path")
+              .attr("xlink:href", "#mature-label-path")
               .attr("startOffset", "50%")
-              .text("Distant");
+              .text("Mature");
   
             maturity_list_elements = [
-              { name: "Existing", fn: existingLabel },
+              { name: "Nascent", fn: nascentLabel },
               { name: "Emerging", fn: emergingLabel },
-              { name: "Distant", fn: distantLabel }
+              { name: "Mature", fn: matureLabel }
             ];
   
             maturity_list.forEach(function(d) {
               var id = "#" + d.name.toLowerCase() + "-label-path-text";
-              //d3.select(id).remove();
+              d3.select(id).remove();
             });
-
-            console.log('chartPieData', chartPieData)
   
             count_by_year.forEach(function(d) {
               chartPieData.forEach(function(v) {
@@ -3458,19 +3787,19 @@
                   "#year-" +
                     d.key +
                     "-" +
-                    v.data.value.key.replace(/ /g, "-").replace(/&/g, "and") +
+                    v.data.value.replace(/ /g, "-").replace(/&/g, "and") +
                     "-segment"
-                ).attr("opacity", 0);
+                ).attr("opacity", 1);
               });
             });
 
             var nodeData = d3
             .nest()
             .key(function(d) {
-              return d["Opportunity Space"];
+              return d["Consolidated Tag"];
             })
             .key(function(d) {
-              return d["Maturity"];
+              return d["Maturity (new)"];
             })
             .rollup(function(v) {
               return v.length;
@@ -3480,10 +3809,10 @@
             var nodeSecondData = d3
               .nest()
               .key(function(d) {
-                return d["Opportunity Space"];
+                return d["Consolidated Tag"];
               })
               .key(function(d) {
-                return d["Year Founded"];
+                return d["Founded Year"];
               })
               .rollup(function(v) {
                 return v.length;
@@ -3493,10 +3822,10 @@
             var nodeThirdData = d3
               .nest()
               .key(function(d) {
-                return d["Opportunity Space"];
+                return d["Consolidated Tag"];
               })
               .key(function(d) {
-                return d["Year Founded"];
+                return d["Founded Year"];
               })
               .rollup(function(v) {
                 return v.length;
@@ -3517,12 +3846,12 @@
                 indexTrackerYear[v.key][w.key] = {'slot': 1}
               })
             })
-
             var nodeList = [];
             data.forEach(function(d) {
                 for (i = 0; i < chartPieData.length; i++) {
+                  
                   if (
-                    d["Opportunity Space"] === chartPieData[i].data.value.key
+                    d["Consolidated Tag"] == chartPieData[i].data.value
                   ) {
                     var tmp_startAngleMin = chartPieData[i].startAngle
                     var tmp_endAngleMax = chartPieData[i].endAngle
@@ -3530,7 +3859,7 @@
                   }
                 }
                 for (i = 0; i < maturity_list.length; i++) {
-                  if (d["Maturity"] === maturity_list[i]["name"]) {
+                  if (d["Maturity (new)"] === maturity_list[i]["name"]) {
                     tmp_innerRadiusMin = maturity_list[i]["inner"]
                     tmp_outerRadiusMax = maturity_list[i]["outer"]
                     break;
@@ -3538,11 +3867,13 @@
                 }
 
                 for (i = 0; i < nodeData.length; i++) {
-                  if (nodeData[i].key === d["Opportunity Space"]) {
+                  if (nodeData[i].key === d["Consolidated Tag"]) {
                     for (j = 0; j < nodeData[i].values.length; j++) {
-                      if (nodeData[i].values[j].key === d["Maturity"]) {
-                        //console.log(nodeData[i].values[j])
-
+                      if (nodeData[i].values[j].key === d["Maturity (new)"]) {
+                        //console.log('tmp_startAngleMin', tmp_startAngleMin)
+                        //console.log('tmp_endAngleMax', tmp_endAngleMax)
+                        //console.log('tmp_innerRadiusMin', tmp_innerRadiusMin)
+                        //console.log('tmp_outerRadiusMax', tmp_outerRadiusMax)
                         var congestion = calcCongestion(
                           tmp_startAngleMin,
                           tmp_endAngleMax,
@@ -3551,7 +3882,7 @@
                           radiusSize,
                           nodeData[i].values[j].value
                         )
-                        if (congestion > 10) {
+                        if (congestion > 1) {
                            d.results = assignRandom(
                             tmp_startAngleMin,
                             tmp_endAngleMax,
@@ -3570,7 +3901,7 @@
                             tmp_outerRadiusMax,
                             nodeData[i].values[j]
                           )
-                          indexTracker[d["Opportunity Space"]][d["Maturity"]]["slot"] += 1
+                          indexTracker[d["Consolidated Tag"]][d["Maturity (new)"]]["slot"] += 1
                         }
 
 
@@ -3585,6 +3916,7 @@
                     }
                   }
                 }
+                console.log(d.results)
 
                 if (d.results) {
                 d.x = d.results[0];
@@ -3600,7 +3932,7 @@
             var nodeSecondList = [];
             data.forEach(function(d) {
               for (i = 0; i < chartPieData.length; i++) {
-                if (d["Opportunity Space"] === chartPieData[i].data.value.key) {
+                if (d["Consolidated Tag"] === chartPieData[i].data.value) {
                   var tmp_startAngleMin = chartPieData[i].startAngle
                   var tmp_endAngleMax = chartPieData[i].endAngle
                   break;
@@ -3608,16 +3940,16 @@
               }
   
               for (i = 0; i < count_by_year.length; i++) {
-                if (d["Year Founded"] === count_by_year[i].key) {
+                if (d["Founded Year"] === count_by_year[i].key) {
                   tmp_innerRadiusMin = count_by_year[i]["inner"]
                   tmp_outerRadiusMax = count_by_year[i]["outer"]
                   break;
                 }
               }
               for (i = 0; i < nodeSecondData.length; i++) {
-                if (nodeSecondData[i].key === d["Opportunity Space"]) {
+                if (nodeSecondData[i].key === d["Consolidated Tag"]) {
                   for (j = 0; j < nodeSecondData[i].values.length; j++) {
-                    if (nodeSecondData[i].values[j].key === d["Year Founded"]) {
+                    if (nodeSecondData[i].values[j].key === d["Founded Year"]) {
                         var congestion = calcCongestion(
                           tmp_startAngleMin,
                           tmp_endAngleMax,
@@ -3626,7 +3958,7 @@
                           radiusSize,
                           nodeSecondData[i].values[j].value
                         )
-                        if (congestion > 20) {
+                        if (congestion > 5) {
                            d.resultsYear = assignRandom(
                             tmp_startAngleMin,
                             tmp_endAngleMax,
@@ -3644,7 +3976,7 @@
                             tmp_outerRadiusMax,
                             nodeSecondData[i].values[j]
                           )
-                          indexTrackerYear[d["Opportunity Space"]][d["Year Founded"]]["slot"] += 1
+                          indexTrackerYear[d["Consolidated Tag"]][d["Founded Year"]]["slot"] += 1
 
                         }
                     }
@@ -3721,10 +4053,21 @@
               d3.select("#button-16").on("change", function() {
                 switchRadial();
               });
+              d3.select("#button-17").on("change", function() {
+                if (geoFilter === "All Startups") {
+                  filters.geotype = "African"
+                  update_opacity()
+                  geoFilter = "African"
+                } else {
+                  filters.geotype = "All Startups"
+                  update_opacity()
+                  geoFilter = "All Startups"
+                }
+              });
   
             var CompetitorMode = 0;
 
-            var radiusSize = 3;
+            var radiusSize = 0.1;
 
             var nodes = chartSVG
               .selectAll("nodes")
@@ -3742,20 +4085,20 @@
               .attr("class", "nodes")
               .attr("r", function(d) {
                 if (
-                    d["Funding Stage"] !== "Acquired"
+                    d["Funding Round"] !== "Acquired"
                 ) {
-                  return 3;
+                  return nodeRadius;
                 }
               })
               .attr("cx", function(d) {
-                return d.x;
+                return d.yearX;
               })
               .attr("cy", function(d) {
-                return d.y;
+                return d.yearY;
               })
               .attr("fill", function(d) {
                 return nodeColorScale(
-                    fundingCategoryScale(d["Funding Stage"])
+                    fundingCategoryScale(d["Funding Round"])
                   );
               })
               .on("mouseover", function(d) {
@@ -3776,13 +4119,13 @@
               .append("polygon")
               .attr("class", "nodes nodes-activity")
               .attr("id", function(d) {
-                return d["Company Name"].toLowerCase().replace(/ /g, "-");
+                return d["Startup Name"].toLowerCase().replace(/ /g, "-");
               })
               .attr("points", function(d) {
                 var points = [
-                  [d.x, d.y],
-                  [d.x, d.y],
-                  [d.x, d.y]
+                  [d.yearX, d.yearY],
+                  [d.yearX, d.yearY],
+                  [d.yearX, d.yearY]
                 ];
                 return points;
               })
@@ -3805,18 +4148,18 @@
               .append("rect")
               .attr("class", "nodes nodes-acquired")
               .attr("id", function(d) {
-                return d["Company Name"].toLowerCase().replace(/ /g, "-");
+                return d["Startup Name"].toLowerCase().replace(/ /g, "-");
               })
               .attr("width", function(d) {
-                if (d["Funding Stage"] === "Acquired") {
-                  return 7.7;
+                if (d["Funding Round"] === "Acquired") {
+                  return nodeOtherWidth
                 } else {
                   return 0;
                 }
               })
               .attr("height", function(d) {
-                if (d["Funding Stage"] === "Acquired") {
-                  return 7.7;
+                if (d["Funding Round"] === "Acquired") {
+                  return nodeOtherWidth
                 } else {
                   return 0;
                 }
@@ -3825,7 +4168,7 @@
               .attr("y", 0)
               .attr("fill", "#FFFD82")
               .attr("transform", function(d) {
-                return "translate(" + d.x + "," + d.y + ")    rotate(45)";
+                return "translate(" + d.yearX + "," + d.yearY + ")    rotate(45)";
               })
               .on("mouseover", function(d) {
                 //nodeMouseOver(d);
@@ -3863,21 +4206,21 @@
   
               if (filterKey === "acquired") {
                 nodes.attr("opacity", function(d) {
-                  if (d["Funding Stage"] !== "Acquired") {
+                  if (d["Funding Round"] !== "Acquired") {
                     d.opacity = 0.3;
                   }
                   return d.opacity;
                 });
   
                 nodes_acquired.attr("opacity", function(d) {
-                  if (d["Funding Stage"] === "Acquired") {
+                  if (d["Funding Round"] === "Acquired") {
                     d.opacity = 1;
                   }
                   return d.opacity;
                 });
   
                 nodes_activity.attr("opacity", function(d) {
-                  if (d["Funding Stage"] !== "Acquired") {
+                  if (d["Funding Round"] !== "Acquired") {
                     d.opacity = 0.3;
                   }
                   return d.opacity;
@@ -3894,7 +4237,7 @@
                 nodes.attr("opacity", function(d) {
                   if (
                     d["Activity/Acquisition Time"] != "" &&
-                    d["Funding Stage"] !== "Acquired"
+                    d["Funding Round"] !== "Acquired"
                   ) {
                     d.opacity = 1;
                   } else {
@@ -3932,8 +4275,9 @@
                 filterKey !== "" &&
                 type === "key"
               ) {
+                
                 nodes.attr("opacity", function(v) {
-                  if (fundingCategoryScale(v["Funding Stage"]) === filterKey) {
+                  if (fundingCategoryScale(v["Funding Round"]) === filterKey) {
                     v.opacity = 1;
                   } else {
                     v.opacity = 0.3;
@@ -3942,7 +4286,7 @@
                 });
   
                 nodes_acquired.attr("opacity", function(d) {
-                  if (d["Funding Stage"] === "Acquired") {
+                  if (d["Funding Round"] === "Acquired") {
                     d.opacity = 0.3;
                   }
                   return d.opacity;
@@ -3969,7 +4313,7 @@
               }
               if (type === "focus area" && filterKey !== "") {
                 nodes.attr("opacity", function(d) {
-                  if (d["Opportunity Space"].toLowerCase() !== filterKey) {
+                  if (d["Consolidated Tag"].toLowerCase() !== filterKey) {
                     d.opacity = 0.3;
                   } else {
                     d.opacity = 1;
@@ -3978,7 +4322,7 @@
                 });
   
                 nodes_acquired.attr("opacity", function(d) {
-                  if (d["Opportunity Space"].toLowerCase() !== filterKey) {
+                  if (d["Consolidated Tag"].toLowerCase() !== filterKey) {
                     d.opacity = 0.3;
                   } else {
                     d.opacity = 1;
@@ -4028,7 +4372,7 @@
                   }
                   if (
                     d.hide === true ||
-                    d["Funding Stage"] === "Acquired" ||
+                    d["Funding Round"] === "Acquired" ||
                     d["Competitor Category"] != ""
                   ) {
                     endR = 0;
@@ -4099,7 +4443,7 @@
                 .duration(animationDuration * 0.7)
                 .attrTween("width", function(d) {
                   var startWidth = d3.select(this).attr("width");
-                  if (d.hide === true || d["Funding Stage"] !== "Acquired") {
+                  if (d.hide === true || d["Funding Round"] !== "Acquired") {
                     endWidth = 0;
                   } else {
                     endWidth = 8.8;
@@ -4111,7 +4455,7 @@
                 })
                 .attrTween("height", function(d) {
                   var startHeight = d3.select(this).attr("height");
-                  if (d.hide === true || d["Funding Stage"] !== "Acquired") {
+                  if (d.hide === true || d["Funding Round"] !== "Acquired") {
                     endHeight = 0;
                   } else {
                     endHeight = 8.8;
@@ -4123,7 +4467,7 @@
                 })
                 .attrTween("y", function(d) {
                   var startY = d3.select(this).attr("y");
-                  if (d.hide === true || d["Funding Stage"] !== "Acquired") {
+                  if (d.hide === true || d["Funding Round"] !== "Acquired") {
                     endY = 7;
                   } else {
                     endY = 0;
@@ -4252,8 +4596,10 @@
         return array;
       }
   
-            function update_opacity(type) {
-              // delete later when you change to industry
+            function update_opacity() {
+
+              type = filters.type
+              geotype = filters.geotype
   
               nodes
                 .transition()
@@ -4261,11 +4607,12 @@
                 .attrTween("r", function(d) {
                   var startR = d3.select(this).attr("r");
                   if (
-                    (d["Industry"] === type || type === "All Startups") &&
-                    d["Funding Stage"] !== "Acquired" &&
-                    d.hide === false
+                    (d["Client Served"] === type || type === "All Startups") &&
+                    d["Funding Round"] !== "Acquired" &&
+                    d.hide === false &&
+                    (d["Global"] === geotype || geotype === "All Startups")
                   ) {
-                    var endR = 3;
+                    var endR = nodeRadius;
                   } else {
                     var endR = 0;
                   }
@@ -4290,18 +4637,19 @@
                   if (
                     d["Activity/Acquisition Time"] != "" &&
                     CompetitorMode === 1 &&
-                    (d["Industry"] === type || type === "All Startups")
+                    (d["Client Served"] === type || type === "All Startups") &&
+                    (d["Global"] === geotype || geotype === "All Startups")
                   ) {
                     var endPoints = [
-                      [d.x, d.y - 4.7],
-                      [d.x - 4.2, d.y + 3.7],
-                      [d.x + 4.2, d.y + 3.7]
+                      [d.yearX, d.yearY - 4.7],
+                      [d.yearX - 4.2, d.yearY + 3.7],
+                      [d.yearX + 4.2, d.yearY + 3.7]
                     ];
                   } else {
                     var endPoints = [
-                      [d.x, d.y],
-                      [d.x, d.y],
-                      [d.x, d.y]
+                      [d.yearX, d.yearY],
+                      [d.yearX, d.yearY],
+                      [d.yearX, d.yearY]
                     ];
                   }
                   var i = d3.interpolateArray(startPoints, endPoints);
@@ -4316,11 +4664,12 @@
                 .attrTween("width", function(d) {
                   var startWidth = d3.select(this).attr("width");
                   if (
-                    (d["Industry"] === type || type === "All Startups") &&
-                    d["Funding Stage"] === "Acquired" &&
-                    d.hide === false
+                    (d["Client Served"] === type || type === "All Startups") &&
+                    d["Funding Round"] === "Acquired" &&
+                    d.hide === false &&
+                    (d["Global"] === geotype || geotype === "All Startups")
                   ) {
-                    var endWidth = 7.7;
+                    var endWidth = nodeOtherWidth
                   } else {
                     var endWidth = 0;
                   }
@@ -4332,11 +4681,12 @@
                 .attrTween("height", function(d) {
                   var startHeight = d3.select(this).attr("height");
                   if (
-                    (d["Industry"] === type || type === "All Startups") &&
-                    d["Funding Stage"] === "Acquired" &&
-                    d.hide === false
+                    (d["Client Served"] === type || type === "All Startups") &&
+                    d["Funding Round"] === "Acquired" &&
+                    d.hide === false &&
+                    (d["Global"] === geotype || geotype === "All Startups")
                   ) {
-                    var endHeight = 7.7;
+                    var endHeight = nodeOtherWidth
                   } else {
                     var endHeight = 0;
                   }
@@ -4348,13 +4698,14 @@
                 .attrTween("y", function(d) {
                   var startY = d3.select(this).attr("y");
                   if (
-                    (d["Industry"] === type || type === "All Startups") &&
-                    d["Funding Stage"] === "Acquired" &&
-                    d.hide === false
+                    (d["Client Served"] === type || type === "All Startups") &&
+                    d["Funding Round"] === "Acquired" &&
+                    d.hide === false &&
+                    (d["Global"] === geotype || geotype === "All Startups")
                   ) {
                     var endY = 0;
                   } else {
-                    var endY = 10;
+                    var endY = nodeOtherWidth*1.5
                   }
                   var i = d3.interpolate(startY, endY);
                   return function(t) {
@@ -4386,7 +4737,14 @@
                     {'name': '100M+', 'lower_limit': 100000000, 'upper_limit': 100000000000, 'startups': 0},
                     ]
 
+                    
+
                     bar_data.forEach(function(v) {
+                      if (v.Funding != 0) {
+                        if (v.Funding.slice(0,1) == "$") {
+                          v.Funding = v.Funding.slice(1)
+                        }
+                      }
                         fundHist.forEach(function(w) {
                             if (v.Funding === "n/a") {
                                 v.Funding = 0
@@ -4420,7 +4778,7 @@
                       "#9368B7", "#9BC53D", "#122C34"]) */
 
                       var colorScale = d3.scaleOrdinal().domain(x.domain())
-                      .range(["#82ADBD"])
+                      .range(["#7DCCFF"])
 
                     var barX = d3.scaleBand()
                     .domain(fundHist.map(function(d) {
@@ -4490,16 +4848,16 @@
                     var yearHist = []
                     var years = []
                     bar_data.forEach(function(v) {
-                      if (years.indexOf(+v.Year) < 0) {
-                        var yearVal = +v.Year
+                      if (years.indexOf(+v.Founded) < 0) {
+                        var yearVal = +v.Founded
                         yearHist.push({'Year': yearVal, 'startups': 0})
-                        years.push(+v.Year)
+                        years.push(+v.Founded)
                       } 
                     })
 
                     bar_data.forEach(function(v) {
                       yearHist.forEach(function(w) {
-                        if (+v.Year === w.Year) {
+                        if (+v.Founded === w.Year) {
                           w.startups += 1
                         }
                       })
@@ -4532,7 +4890,7 @@
                   "#9368B7", "#9BC53D", "#122C34"]) */
 
                   var colorScale = d3.scaleOrdinal().domain(x.domain())
-                  .range(["#82ADBD"])
+                  .range(["#7DCCFF"])
 
                   var y = d3.scaleLinear()
                   .range([bar_height-50, 50])
@@ -4685,9 +5043,9 @@
 
                 }
 
-                                if (type === "Maturity") {
+                  if (type === "Maturity") {
                   var maturityOrder = [
-                  "Existing", "Emerging", "Distant"]
+                  "Nascent", "Emerging", "Mature"]
                   function maturitySort(a, b) {
                     
                     for (i = 0; i < maturityOrder.length; i++) {
@@ -4703,7 +5061,7 @@
 
                   var maturity_data = d3.nest()
                   .key(function(d) {
-                    return d["Maturity"]
+                    return d["Maturity (new)"]
                   })
                   .rollup(function(v) {
                     return {startups: v.length}
@@ -4712,6 +5070,7 @@
                   .entries(bar_data.filter(function(d) {
                     return d.Maturity != ""
                   }) )
+
                   
 
                   var maxVal = d3.max(maturity_data, function(d) {
@@ -4726,7 +5085,7 @@
                 .paddingInner(0.25);
 
                 var colorScale = d3.scaleOrdinal().domain(x.domain())
-                .range(["#82ADBD"])
+                .range(["#7DCCFF"])
 
                 var y = d3.scaleLinear()
                 .range([bar_height-50, 50])
@@ -4939,7 +5298,7 @@
                 CompetitorMode === 0 ||
                 data["Competitor Categor  y"] !== "Activity"
               ) {
-                return data["Year Founded"];
+                return data["Founded Year"];
               } else {
                 return data["Activity/Acquisition Time"];
               }
@@ -4983,13 +5342,12 @@
             }
   
             function hoverInfoFunction(segment_data, clicked = "") {
-              console.log(segment_data)
               var segmentDesc;
   
               desc.forEach(function(v) {
                 if (
                   segment_data.data.value.key ===
-                  v["Opportunity Space"].toLowerCase().replace(/\//g, "_")
+                  v["Consolidated Tag"].toLowerCase().replace(/\//g, "_")
                 ) {
                   segmentDesc = v.Description;
                 }
@@ -5025,7 +5383,7 @@
                       segmentFunding = d3.sum(
                         count_by_focus_area[i].values,
                         function(d) {
-                          return d["Total funding (US$)"];
+                          return d["Funding amount ($)"];
                         }
                       );
                     }
@@ -5128,13 +5486,25 @@
               var count_by_focus_area = d3
                 .nest()
                 .key(function(d) {
-                  return d["Opportunity Space"];
+                  return d["Consolidated Tag"];
                 })
-                .sortKeys(focusAreaSort)
+              .sortKeys(function(a, b) {
+                let aVal = 0
+                let bVal = 0
+                focusAreaSort.forEach(function(v, index) {
+                  if (a === v) {
+                    aVal = index
+                  }
+                  if (b === v) {
+                    bVal = index
+                  }
+                })
+                return d3.ascending(aVal, bVal)
+              })
                 .entries(
                   data.filter(function(d) {
-                    if (industryFilter !== "All Startups") {
-                      return d.Industry === industryFilter;
+                    if (clientFilter !== "All Startups") {
+                      return d["Client Served"] === clientFilter;
                     } else {
                       return d;
                     }
@@ -5142,7 +5512,7 @@
                 );
   
               nodes.attr("opacity", function(d) {
-                if (d["Opportunity Space"] === segment_data.data.value.key) {
+                if (d["Consolidated Tag"] === segment_data.data.value.key) {
                   return 1;
                 } else {
                   return 0.3;
@@ -5150,7 +5520,7 @@
               });
   
               nodes_acquired.attr("opacity", function(d) {
-                if (d["Opportunity Space"] === segment_data.data.value.key) {
+                if (d["Consolidated Tag"] === segment_data.data.value.key) {
                   return 1;
                 } else {
                   return 0.3;
@@ -5181,7 +5551,7 @@
               }
               /* if (type === "size") {
                   nodes.attr("opacity", function(d) {
-                    if (nodeSizeScaleFunction(d["Total funding (US$)"]) === data) {
+                    if (nodeSizeScaleFunction(d["Funding amount ($)"]) === data) {
                       return 1;
                     } else {
                       return 0.3;
@@ -5191,7 +5561,7 @@
                 } */
               if (type === "color") {
                 nodes.attr("opacity", function(d) {
-                  if (fundingCategoryScale(d["Funding Stage"]) === data) {
+                  if (fundingCategoryScale(d["Funding Round"]) === data) {
                     return 1;
                   } else {
                     return 0.3;
@@ -5238,28 +5608,59 @@
             }
 
             function showOppSpaceTooltip(segment_data, clicked = "") {              
-              desc.forEach(function(v) {
+              /*desc.forEach(function(v) {
                 if (
                   segment_data.data.value.key ===
                   v["Opportunity Space"].toLowerCase().replace(/\//g, "_")
                 ) {
                   segmentDesc = v.Description;
                 }
-              });
+              });*/
+            var count_by_focus_area = d3
+              .nest()
+              .key(function(d) {
+                return d["Consolidated Tag"];
+              })
+              .sortKeys(function(a, b) {
+                let aVal = 0
+                let bVal = 0
+                focusAreaSort.forEach(function(v, index) {
+                  if (a === v) {
+                    aVal = index
+                  }
+                  if (b === v) {
+                    bVal = index
+                  }
+                })
+                return d3.ascending(aVal, bVal)
+              })
+              .entries(data.filter(function(v) {
+                if (filters.type === "All Startups") {
+                  return v
+                } else {
+                  return v["Client Served"] === filters.type
+                }
+              }).filter(function(v) {
+                if (filters.geotype === "All Startups") {
+                  return v
+                } else {
+                  return v["Global"] === filters.geotype
+                }
+              }));
+
               var numberOfStartups = 0;
               var segmentFunding = 0;
               for (i = 0; i < count_by_focus_area.length; i++) {
                 if (
-                  count_by_focus_area[i].key === segment_data.data.value.key
+                  count_by_focus_area[i].key === segment_data.data.value
                 ) {
                   numberOfStartups = count_by_focus_area[i].values.length;
-                  theme = count_by_focus_area[i].values[0]["Theme"];
-                  themeDesc =
-                    count_by_focus_area[i].values[0]["Theme Definition"];
+                  
+                  
                   segmentFunding = d3.sum(
                     count_by_focus_area[i].values,
                     function(d) {
-                      return d["Total funding (US$)"];
+                      return d["Funding amount ($)"];
                     }
                   );
                 }
@@ -5270,31 +5671,39 @@
                   var avgFunding = segmentFunding / numberOfStartups;
                 }
               d3.select("#opp-space-tooltip-container").style("display", "block")
-              d3.select(".opp-space-tooltip-title").text((segment_data.data.value.key).toUpperCase().replace(/_/g, "/"))
-              d3.select("#ostt-1").text(segmentDesc)
+              d3.select(".opp-space-tooltip-title").text((segment_data.data.value).toUpperCase().replace(/_/g, "/"))
+              //d3.select("#ostt-1").text(segmentDesc)
               d3.select("#ostt-3").text(formatFunding(segmentFunding))
               d3.select("#ostt-5").text(numberOfStartups)
               d3.select("#ostt-7").text(formatFunding(avgFunding))
-              d3.select("#ostt-8").text(theme.toUpperCase())
-              d3.select("#ostt-9").text(themeDesc)
+              //d3.select("#ostt-8").text(theme.toUpperCase())
+              //d3.select("#ostt-9").text(themeDesc)
             }
 
             function formatURL(url) {
-              if (url !== "" && url != null) {
-                if (url.slice(0,3) === "www") {
+              if (url.slice(0,3) === "www") {
                 return "http://" + url
               } else {
                 return url
               }
-              } else {
-                return ""
-              }
             }
 
-            function showNodeTooltip(d) {
-              d3.select(".node-tooltip-title").text(d["Company Name"]);
-              d3.select(".node-tooltip-funding").text("Total Funding: $" + formatFunding(d["Total funding (US$)"]));
-              d3.select(".node-tooltip-description").text(d["Business Description"].replace(/�۪/g, "'"));
+            function showNodeTooltip(d) {   
+              const fundingList = ["Unfunded"]
+              let fundingVal = 0
+              if (fundingList.indexOf(d["Funding Round"]) < 0) {
+                if (d["Funding amount ($)"] == 0) {
+                  fundingVal = "Undisclosed"
+                } else {
+                  fundingVal = "$" + formatFunding(d["Funding amount ($)"])
+                }
+              } else {
+                fundingVal = "$" + formatFunding(d["Funding amount ($)"])
+              }
+
+              d3.select(".node-tooltip-title").text(d["Startup Name"]);
+              d3.select(".node-tooltip-funding").text("Total Funding: " + (fundingVal));
+              d3.select(".node-tooltip-description").text(d["Description"].replace(/�۪/g, "'"));
 
               d3.select(".node-tooltip")
               .style("opacity", 1);
@@ -5316,13 +5725,13 @@
               }
 
               nodes.attr("opacity", function(v) {
-                if (v["Funding Stage"] === d["Funding Stage"]) {
+                if (v["Funding Round"] === d["Funding Round"]) {
                   return 1;
                 } else {
                   return 0.3;
                 }
               });
-              if (d["Funding Stage"] === "Acquired") {
+              if (d["Funding Round"] === "Acquired") {
                 nodes_acquired.attr("opacity", 1);
               } else {
                 nodes_acquired.attr("opacity", 0.3);
@@ -5369,9 +5778,9 @@
                   var x = d3.select(this).attr("x");
                   return hover_info(
                     data["Business Description"],
-                    data["Company Name"],
+                    data["Startup Name"],
                     dateForMode(data),
-                    data["Total funding (US$)"],
+                    data["Funding amount ($)"],
                     x
                   );
                 });
@@ -5436,21 +5845,21 @@
                   var x = d3.select(this).attr("x");
                   return hover_info(
                     data["Business Description"],
-                    data["Company Name"],
+                    data["Startup Name"],
                     dateForMode(data),
-                    data["Total funding (US$)"],
+                    data["Funding amount ($)"],
                     x
                   );
                 });
   
               nodes.attr("opacity", function(d) {
-                if (d["Funding Stage"] === data["Funding Stage"]) {
+                if (d["Funding Round"] === data["Funding Round"]) {
                   return 1;
                 } else {
                   return 0.3;
                 }
               });
-              if (data["Funding Stage"] === "Acquired") {
+              if (data["Funding Round"] === "Acquired") {
                 nodes_acquired.attr("opacity", 1);
               } else {
                 nodes_acquired.attr("opacity", 0.3);
@@ -5495,74 +5904,81 @@
                     .attr("height", tmp_height);
   
                           if (i === 0) {
-                            var hor = tmp_width - 190
+                            var hor = tmp_width - 170
                             var ver = tmp_height + 45;
                           }
                           if (i === 1) {
-                            var hor = tmp_width - 320;
-                            var ver = tmp_height - 0;
+                            var hor = tmp_width - 290;
+                            var ver = tmp_height + 20;
                           }
                           if (i === 2) {
                             var hor = tmp_width - 340;
-                            var ver = tmp_height - 100;
+                            var ver = tmp_height - 20;
                           }
                           if (i === 3) {
-                            var hor = tmp_width - 315;
-                            var ver = tmp_height - 270;
+                            var hor = tmp_width - 335;
+                            var ver = tmp_height - 170;
                           }
                           if (i === 4) {
-                            var hor = tmp_width - 210;
-                            var ver = tmp_height - 330;
+                            var hor = tmp_width - 290;
+                            var ver = tmp_height - 290;
                           }
                           if (i === 5) {
-                            var hor = tmp_width - 10;
-                            var ver = tmp_height - 340;
+                            var hor = tmp_width - 180;
+                            var ver = tmp_height - 330;
                           }
                           if (i === 6) {
-                            var hor = tmp_width + 30;
-                            var ver = tmp_height - 280;
+                            var hor = tmp_width - 15;
+                            var ver = tmp_height - 330;
                           }
                           if (i === 7) {
-                            var hor = tmp_width + 40;
-                            var ver = tmp_height - 110;
+                            var hor = tmp_width + 20;
+                            var ver = tmp_height - 290;
                           }
                           if (i === 8) {
-                            var hor = tmp_width + 30;
-                            var ver = tmp_height + 10;
+                            var hor = tmp_width + 40;
+                            var ver = tmp_height - 180;
                           }
                           if (i === 9) {
-                            var hor = tmp_width - 5;
-                            var ver = tmp_height + 35;
+                         var hor = tmp_width + 40;
+                            var ver = tmp_height - 10;
                           }
-
+                          if (i === 10) {
+                            var hor = tmp_width + 25;
+                            var ver = tmp_height + 25;
+                          }
+                          if (i === 11) {
+                            var hor = tmp_width - 15;
+                            var ver = tmp_height + 45;
+                          }
   
                   var tmp_chartSVG = tmp_svg
                     .append("g")
                     .attr("transform", "translate(" + hor + "," + ver + ")");
   
                   if (radial === "maturity") {
-                    var tmp_existingSegments = tmp_chartSVG
-                      .selectAll("existing-segments")
+                    var tmp_nascentSegments = tmp_chartSVG
+                      .selectAll("nascent-segments")
                       .data([chartPieData[i]])
                       .enter()
                       .append("path")
                       .style("fill-opacity", 1)
                       .attr("class", function(d) {
                         return (
-                          "existing-segments segment-" +
+                          "nascent-segments segment-" +
                           d.data.value.key.replace(/ /g, "-").replace(/&/g, "and")
                         );
                       })
                       .attr("id", function(d) {
                         return (
-                          "tmp-existing-segment-" +
+                          "tmp-nascent-segment-" +
                           d.data.value.key.replace(/ /g, "-").replace(/&/g, "and")
                         );
                       })
                       .style("stroke", "white")
                       .style("stroke-width", "2px")
                       .attr("fill", "#DFDFDF") //F4F4F4
-                      .attr("d", existingArc);
+                      .attr("d", nascentArc);
   
                     var tmp_emergingSegments = tmp_chartSVG
                       .selectAll("emerging-segments")
@@ -5587,28 +6003,28 @@
                       .attr("fill", "#E9E9E9")
                       .attr("d", emergingArc);
   
-                    var tmp_distantSegments = tmp_chartSVG
-                      .selectAll("distant-segments")
+                    var tmp_matureSegments = tmp_chartSVG
+                      .selectAll("mature-segments")
                       .data([chartPieData[i]])
                       .enter()
                       .append("path")
                       .style("fill-opacity", 1)
                       .attr("class", function(d) {
                         return (
-                          "distant-segments segment-" +
+                          "mature-segments segment-" +
                           d.data.value.key.replace(/ /g, "-").replace(/&/g, "and")
                         );
                       })
                       .attr("id", function(d) {
                         return (
-                          "tmp-distant-segment-" +
+                          "tmp-mature-segment-" +
                           d.data.value.key.replace(/ /g, "-").replace(/&/g, "and")
                         );
                       })
                       .style("stroke", "white")
                       .style("stroke-width", "2px")
                       .attr("fill", "#F4F4F4") //DFDFDF
-                      .attr("d", distantArc);
+                      .attr("d", matureArc);
                   } else {
                     count_by_year.forEach(function(v) {
                       var tmpArc = d3
@@ -5634,7 +6050,7 @@
                     .append("path")
                     .classed("segment-band", true)
                     .attr("d", segmentLabelBandArc)
-                    .attr("fill", "#82ADBD")
+                    .attr("fill", "#7DCCFF")
   
                   var tmpLabels = tmp_chartSVG
                     .append("g")
@@ -5721,8 +6137,8 @@
                     .append("circle")
                     .attr("class", "nodes")
                     .attr("r", function(d) {
-                      if (d["Funding Stage"] !== "Acquired") {
-                        return 3;
+                      if (d["Funding Round"] !== "Acquired") {
+                        return nodeRadius;
                       }
                     })
                     .attr("opacity", function(d) {
@@ -5730,7 +6146,7 @@
                     })
                     .attr("fill", function(d) {
                       return nodeColorScale(
-                        fundingCategoryScale(d["Funding Stage"])
+                        fundingCategoryScale(d["Funding Round"])
                       );
                     })
                     .attr("cx", function(d) {
@@ -5749,7 +6165,7 @@
                     })
                     .attr("opacity", function(d) {
                       if (
-                        d["Opportunity Space"] === chartPieData[i].data.value.key
+                        d["Consolidated Tag"] === chartPieData[i].data.value.key
                       ) {
                         return d.opacity;
                       } else {
@@ -5770,15 +6186,15 @@
                       return d.opacity;
                     })
                     .attr("width", function(d) {
-                      if (d["Funding Stage"] === "Acquired") {
-                        return 7.7;
+                      if (d["Funding Round"] === "Acquired") {
+                        return nodeOtherWidth
                       } else {
                         return 0;
                       }
                     })
                     .attr("height", function(d) {
-                      if (d["Funding Stage"] === "Acquired") {
-                        return 7.7;
+                      if (d["Funding Round"] === "Acquired") {
+                        return nodeOtherWidth
                       } else {
                         return 0;
                       }
@@ -5798,7 +6214,7 @@
                     })
                     .attr("opacity", function(d) {
                       if (
-                        d["Opportunity Space"] === chartPieData[i].data.value.key
+                        d["Consolidated Tag"] === chartPieData[i].data.value.key
                       ) {
                         return d.opacity;
                       } else {
@@ -5837,6 +6253,7 @@
                     d3.select("#control-container").style("display", "none")
                     d3.select("#hover-info-container").style("display", "none")
                     d3.select("#save-button-container").style("display", "none")
+                     map.invalidateSize()
                 } else {
                   d3.select(".map-container").style("display", "none")
                   d3.select(".map-tooltip").style("display", "none");
@@ -5857,8 +6274,8 @@
             d3.select("#map-toggle-btn").on("click", function() {
                 d3.select("#map-toggle-btn").attr("class", "left-sidebar-btn active")
                 d3.select("#radar-toggle-btn").attr("class", "left-sidebar-btn")
-                d3.select("body").style("background-color", "#CBCBCB")
-
+                d3.select("body").style("background-color", "#F4F4F4")
+               
               toggle_map("on")
             })
   
@@ -5964,11 +6381,10 @@
                 element.insertBefore(styleElement, refNode);
               }
             }
+          //});
           });
-        })
-  
-          })
-        });
+        
+        //});
   
         function round_to_precision(x, precision) {
           var y = +x + (precision === undefined ? 0.5 : precision / 2);
@@ -6163,7 +6579,7 @@
             loop1:
             for (let hi = 0; hi <= horizontalCuts; hi++) {
               index ++
-            if (index === indexTrackerYear[data["Opportunity Space"]][data["Year Founded"]]["slot"]) {
+            if (index === indexTrackerYear[data["Consolidated Tag"]][data["Founded Year"]]["slot"]) {
               horizontalSlot = hi
               verticalSlot = vi
               break loop0
@@ -6224,7 +6640,7 @@
             loop1:
             for (let hi = 0; hi <= horizontalCuts; hi++) {
               index ++
-            if (index === indexTracker[data["Opportunity Space"]][data["Maturity"]]["slot"]) {
+            if (index === indexTracker[data["Consolidated Tag"]][data["Maturity (new)"]]["slot"]) {
               horizontalSlot = hi
               verticalSlot = vi
               break loop0
@@ -6288,7 +6704,7 @@
                 Math.pow(nodeList[l][0] - tmp_x, 2) +
                   Math.pow(nodeList[l][1] - tmp_y, 2)
               );
-              if (distance <= 6) {
+              if (distance <= 5) {
                 distanceCheck = 1;
               }
             }
@@ -6310,6 +6726,25 @@
             return [tmp_x, tmp_y];
           }
         }
+        function projectPoint(x, y) {
+        var point = map.latLngToLayerPoint(new L.LatLng(y, x));
+        this.stream.point(point.x, point.y);
+      }
+
+      var center = function (arr)
+        {
+            var minX, maxX, minY, maxY;
+            for (var i = 0; i < arr.length; i++)
+            {
+                minX = (arr[i][0] < minX || minX == null) ? arr[i][0] : minX;
+                maxX = (arr[i][0] > maxX || maxX == null) ? arr[i][0] : maxX;
+                minY = (arr[i][1] < minY || minY == null) ? arr[i][1] : minY;
+                maxY = (arr[i][1] > maxY || maxY == null) ? arr[i][1] : maxY;
+            }
+            return [(minX + maxX) / 2, (minY + maxY) / 2];
+        }
+
+
       </script>
   
   </body>
