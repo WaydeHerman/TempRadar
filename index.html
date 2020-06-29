@@ -1593,9 +1593,6 @@
               )
             );
 
-            data = data.filter(function(v) {
-              return v["Maturity (new)"] != ""
-            })
               data = data.filter(function(v) {
               return v["Include"] == "TRUE"
             })
@@ -1607,8 +1604,8 @@
 
               spinner.stop();
               //d3.select("#button-16").style("display", "block")
-              d3.select("#button-17").style("display", "block")
-              d3.select(".dropdown-client").style("display", "inline-block")
+              //d3.select("#button-17").style("display", "block")
+              //d3.select(".dropdown-client").style("display", "inline-block")
               d3.select("#save-button").style("display", "block")
               d3.select(".chart-title").style("display", "")
               //chartLogo.style("display", "block")
@@ -1648,8 +1645,8 @@
                 }
               })*/
 
-            //var q = d3.queue();
-            //var geocoder = L.mapbox.geocoder("mapbox.places");
+            var q = d3.queue();
+            var geocoder = L.mapbox.geocoder("mapbox.places");
 
 
 
@@ -2425,6 +2422,7 @@
                   }
                 });
               });
+
   
               /*var countries = leftG
                 .selectAll(".country")
@@ -2463,10 +2461,10 @@
                 return d.geometry.coordinates[0].length > 2
               })
 
-              /*q.awaitAll(function (error) {
+              q.awaitAll(function (error) {
                 if (error) throw error;
                 setTimeout(function () {
-                  mapG
+                  /*mapG
                   .selectAll(".city-circle")
                   .data(data_city.filter(function(v) {
                     return v.cityLat != null
@@ -2490,7 +2488,7 @@
                 .attr("stroke", "#7DCCFF")
                 .style("visibility", "hidden")
                 .on("mouseover", city_hover)
-                .on("click", city_click)
+                .on("click", city_click)*/
 
 
                 mapG
@@ -2532,8 +2530,10 @@
                 })
                 .on("click", country_click)
 
-                }, 2000);*/
+                }, 2000);
                 });
+
+
 
 
 
@@ -3916,15 +3916,16 @@
                     }
                   }
                 }
-                console.log(d.results)
 
-                if (d.results) {
+                /*if (d.results) {
                 d.x = d.results[0];
                 d.y = d.results[1];
                 } else {
                 d.x = 0//results[0];
                 d.y = 0//results[1];
-                }
+                }*/
+                d.x = 0//results[0];
+                d.y = 0//results[1];
                 d.opacity = 1;
               });
 
@@ -6381,7 +6382,7 @@
                 element.insertBefore(styleElement, refNode);
               }
             }
-          //});
+          });
           });
         
         //});
